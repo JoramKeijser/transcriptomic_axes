@@ -1,0 +1,19 @@
+rule download_data:
+    output:
+        directory("data/bugeon")
+    shell:
+        """
+        wget https://figshare.com/ndownloader/files/38046633
+        unzip -q 38046633 -d data/bugeon
+        rm 38046633
+        """
+        
+rule activity:
+    input:
+        "data/bugeon/"
+    params:
+        "Blank"
+    output:
+        "results/pandas/activity.h5ad", "figures/figure1/state_modulation.png"
+    script:
+        "fig1_activity.py"
