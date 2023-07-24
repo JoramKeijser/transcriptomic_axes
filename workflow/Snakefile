@@ -10,10 +10,22 @@ rule download_data:
         
 rule activity:
     input:
-        "data/bugeon/"
+        data_dir = "data/bugeon/"
     params:
-        "Blank"
+        stimulus = "Blank"
     output:
-        "results/pandas/activity.h5ad", "figures/figure1/state_modulation.png"
+        data = "results/pandas/activity.h5ad",
+        figure = "figures/figure1/state_modulation.png"
     script:
         "fig1_activity.py"
+
+rule example_trial:
+    input:
+        directory("data/bugeon/SB026/2019-10-16/")
+    params:
+        experiment = "SB026/2019-10-16/",
+        stimulus = "Blank"
+    output:
+        figure = "figures/figure1/example_trial.png"
+    script:
+        'fig1_example_trial.py'

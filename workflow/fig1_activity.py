@@ -18,8 +18,8 @@ sns.set_context("poster")
 
 
 #save_dir = "./results/pandas/"
-basedir = snakemake.input[0] + "/" 
-stimulus = "Blank"  # stimulus - only take gray screen
+basedir = snakemake.input.data_dir + "/" 
+stimulus = snakemake.params.stimulus # stimulus - only take gray screen
 all_adatas = ad.AnnData()
 adata_dict = {}
 exp_folders = [d for d in os.listdir(basedir) if os.path.isdir(basedir + d)]
@@ -54,7 +54,7 @@ print(f'{np.sum(nan_cell)} cells with missing State modulation, {np.sum(~nan_cel
 
 for variable in ["Running", "Stationary Desynchronized", "State modulation"]:
     var_df[variable] = var_df[variable].astype(float) 
-var_df.to_csv(snakemake.output[0]) #f"{save_dir}bugeon_activity.h5ad"
+var_df.to_csv(snakemake.output.data) #f"{save_dir}bugeon_activity.h5ad"
 
     # Visualize 
 fontsize = 20
@@ -76,6 +76,6 @@ plt.tight_layout()
 print(f"{modulation}: n = {var_df[~var_df[modulation].isna()].shape[0]} interneurons:")
 print(var_df[~var_df[modulation].isna()].value_counts("Subclass"))                    
 plt.tight_layout()
-plt.savefig(snakemake.output[1], dpi=300)
+plt.savefig(snakemake.output.figure, dpi=300)
 
 
