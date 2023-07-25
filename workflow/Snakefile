@@ -1,3 +1,5 @@
+SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
+
 rule download_data:
     output:
         directory("data/bugeon")
@@ -8,7 +10,7 @@ rule download_data:
         rm 38046633
         """
         
-rule activity:
+rule state_state_modulation:
     input:
         data_dir = "data/bugeon/"
     params:
@@ -17,7 +19,7 @@ rule activity:
         data = "results/pandas/activity.h5ad",
         figure = "figures/figure1/state_modulation.png"
     script:
-        "fig1_activity.py"
+        "fig1_state_state_modulation.py"
 
 rule example_trial:
     input:
@@ -29,3 +31,9 @@ rule example_trial:
         figure = "figures/figure1/example_trial.png"
     script:
         'fig1_example_trial.py'
+
+rule preprocess:
+    input: data_dir = "data/bugeon/"
+    output: anndata = "data/anndata/bugeon.h5ad"
+    script: "preprocess_bugeon.py"
+    
