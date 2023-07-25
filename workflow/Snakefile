@@ -10,7 +10,7 @@ rule download_data:
         rm 38046633
         """
         
-rule state_state_modulation:
+rule state_modulation:
     input:
         data_dir = "data/bugeon/"
     params:
@@ -19,11 +19,11 @@ rule state_state_modulation:
         data = "results/pandas/activity.h5ad",
         figure = "figures/figure1/state_modulation.png"
     script:
-        "fig1_state_state_modulation.py"
+        "fig1_state_modulation.py"
 
 rule example_trial:
     input:
-        directory("data/bugeon/SB026/2019-10-16/")
+        "data/bugeon/SB026/2019-10-16/"
     params:
         experiment = "SB026/2019-10-16/",
         stimulus = "Blank"
@@ -36,4 +36,30 @@ rule preprocess:
     input: data_dir = "data/bugeon/"
     output: anndata = "data/anndata/bugeon.h5ad"
     script: "preprocess_bugeon.py"
-    
+
+rule pca:
+    input:
+        transcriptomics = "data/anndata/bugeon.h5ad",
+        activity = "results/pandas/activity.h5ad"
+    params:
+        transform = lambda wildcards : wildcards.transform
+    output:
+        annotated = "results/anndata/bugeon_{transform}.h5ad"
+    script:
+        'fig1_pca.py'
+
+# TODO: fix problem that we now only have bugeon_log 
+
+rule regression:
+    input: 
+        "results/anndata/bugeon_log.h5ad"
+    params:
+        n_subsets = 1000 #lambda wildcards : wildcards.n_subsets
+    output: 
+        "figures/figure1/regression_All.png",
+        expand("figures/figure1/regression_{subclass}.png",
+            subclass=SUBCLASSES),
+        "figures/figure1/subclass_corr.png",
+        "figures/figure1/subclass_corr_{params.n_subsets}.png"
+    script:
+        "fig1_regression.py"
