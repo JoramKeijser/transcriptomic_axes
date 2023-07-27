@@ -1,4 +1,10 @@
 SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
+DATASETS = ["bugeon", "tasic", "bakken", "colquitt", "tosches", "yao"]
+
+rule download_all:
+    # TODO: map in a convenient way - e.g. map from csv 
+    input:
+        directory(expand("data/{dataset}", dataset=DATASETS))
 
 rule download_data:
     output:
@@ -6,10 +12,61 @@ rule download_data:
     shell:
         """
         wget https://figshare.com/ndownloader/files/38046633
-        unzip -q 38046633 -d data/bugeon
+        unzip -q 38046633 -d {output}
         rm 38046633
         """
-        
+
+rule download_tasic:
+    output:
+        directory("data/tasic")
+    shell:
+        """
+        mkdir {output}
+        wget -P {output} https://celltypes.brain-map.org/api/v2/well_known_file_download/694413985
+        file-roller -h {output}/694413985 
+        mv {output}/694413985_FILES/* {output} 
+        rm -r {output}/694413985_FILES,694413985 
+        """
+
+rule download_bakken:
+    output:
+        directory("data/bakken")
+    shell:
+        """
+        wget -P {output} https://idk-etl-prod-download-bucket.s3.amazonaws.com/aibs_human_m1_10x/metadata.csv
+        wget -P {output} https://idk-etl-prod-download-bucket.s3.amazonaws.com/aibs_human_m1_10x/matrix.csv
+        """
+
+rule download_colquitt:
+    output:
+        directory("data/colquitt")
+    shell:
+        """
+        echo "Download dataset 4/6: songbird"
+        datadir={output}
+        wget -O HVC_RA_RNA_counts.csv 'https://cloud.biohpc.swmed.edu/index.php/s/nLicEtkmjGGmRF8/download?path=%2FHVC_RA&files=HVC_RA_RNA_counts.csv&downloadStartSecret=6cncz7uwc0g'
+        mv HVC_RA_RNA_counts.csv {output}
+        """
+
+rule download_tosches:
+    output:
+        directory("data/tosches")
+    shell:
+        """
+        mkdir {output}
+        wget -P {output} https://public.brain.mpg.de/Laurent/ReptilePallium2018/turtle.neurons.Robj
+        """
+rule download:
+    output:
+        directory("data/yao/")
+    shell:
+        """
+        echo "Download dataset 6/6: Yao et al. (mouse Ctx & Hpc)"
+        mkdir {output}
+        wget -P {output} https://idk-etl-prod-download-bucket.s3.amazonaws.com/aibs_mouse_ctx-hpf_10x/metadata.csv
+        wget -P {output} https://idk-etl-prod-download-bucket.s3.amazonaws.com/aibs_mouse_ctx-hpf_10x/matrix.csv
+        """
+
 rule state_modulation:
     input:
         data_dir = "data/bugeon/"
@@ -39,18 +96,22 @@ rule preprocess:
 
 rule pca:
     input:
+        figdir = "figures/figure1/",
         transcriptomics = "data/anndata/bugeon.h5ad",
         activity = "results/pandas/activity.h5ad"
     params:
         transform = lambda wildcards : wildcards.transform
     output:
-        annotated = "results/anndata/bugeon_{transform}.h5ad"
+        annotated = "results/anndata/bugeon_{transform}.h5ad",
+        pca_subclass = "figures/figure1/pca_subclass_{transform}.png",
+        pca_modulation = "figures/figure1/pca_modulation_{transform}.png"
     script:
         'fig1_pca.py'
 
 # TODO: fix problem that we now only have bugeon_log 
 
 rule regression:
+    # TODO: fix num_subsets hard coding
     input: 
         "results/anndata/bugeon_log.h5ad"
     params:
@@ -58,8 +119,10 @@ rule regression:
     output: 
         "figures/figure1/regression_All.png",
         expand("figures/figure1/regression_{subclass}.png",
-            subclass=SUBCLASSES),
+            subclass=SUBCLASSES, transform=['log']),
         "figures/figure1/subclass_corr.png",
-        "figures/figure1/subclass_corr_{params.n_subsets}.png"
+        f"figures/figure1/subclass_corr_1000.png",
+        #TODO: fix mean by subtype.
+        #by_subtype = "results/pandas/bugeon_by_subtype.csv"
     script:
         "fig1_regression.py"

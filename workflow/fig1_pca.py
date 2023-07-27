@@ -17,7 +17,6 @@ from scipy.stats import pearsonr
 from src import regression_tools, constants, pca_tools
 
 plt.rcParams["axes.grid"] = False
-sc.settings.figdir="./figures/figure1"
 sc.settings.fontsize = 10
 marker_size = 100
 alpha = 0.85
@@ -28,7 +27,7 @@ sns.set_context("poster")
 
 def main(args):
 
-
+    sc.settings.figdir= "../" #snakemake.input.figdir # "figures/figure1"
     # Load data
     bugeon = ad.read_h5ad(snakemake.input.transcriptomics) #"./data/anndata/bugeon.h5ad"
     activity = pd.read_csv(snakemake.input.activity, index_col=0) #"./results/pandas/bugeon_activity.h5ad"
@@ -41,7 +40,7 @@ def main(args):
 
     # log-normalized and do PCA
     sc.pp.normalize_total(bugeon, target_sum=constants.NORMALIZE_TARGET_SUM)
-    if snakemake.params.transform == "counts":
+    if snakemake.params.transform == "raw":
         transform = "counts"
         print("Don't apply log-transform but use normalized counts")
         sc.pp.pca(bugeon, n_comps=71)
@@ -65,25 +64,39 @@ def main(args):
     for pc in range(n_pcs):
         bugeon.obs[f'PC{pc+1}'] = bugeon.obsm['X_pca'][:, pc]
 
-    bugeon.write_h5ad(snakemake.output.anndata) #f"./results/anndata/bugeon.h5ad"
+    bugeon.write_h5ad(snakemake.output.annotated) 
     # Show
-    """
+    
     fig, ax = plt.subplots(figsize=(4, 3))
     sns.despine()
     sc.pl.pca(bugeon, color='Subclass', title = "Subclass",
         legend_fontsize=15, size = marker_size, palette = colorblind,
-            save=f"_subclass_{transform}.png", show=False, alpha=0.67,
+            save=False, show=False, alpha=0.67,
             ax=ax, annotate_var_explained=True, legend_loc='on data')
+    fig.tight_layout()
+    plt.savefig(snakemake.output.pca_subclass)
 
     # Color by state modulation
+    
     fig, ax = plt.subplots(figsize=(4, 3))
     sns.despine()
     sc.pl.pca(bugeon, color='State modulation', title = "State modulation",
                 vmin=-0.25, vmax=0.55, size=marker_size,
                 save=f"_modulation_{transform}.png", show=False, 
                 ax=ax, annotate_var_explained=True)
+    fig.tight_layout()
+    plt.savefig(snakemake.output.pca_modulation)
+    
+    # Group by subtype so we can annotate with receptors from Tasic
+    by_subtype = bugeon.obs.groupby("Subtype").mean()
+    by_subtype['Subclass'] = [subtype.split("-")[0] for subtype in by_subtype.index]
+    by_subtype['Subclass'] = by_subtype['Subclass'].replace({'Serpinf1': 'Vip'})
+    by_subtype['Subclass'] = by_subtype['Subclass'].astype("category")
+    subclass_order = ['Pvalb', 'Sst', 'Lamp5', 'Vip', 'Sncg']
+    by_subtype['Subclass'] = by_subtype['Subclass'].cat.reorder_categories(subclass_order)
+    by_subtype.to_csv(snakemake.output.by_subtype)
 
-    """
+    
     # Save
 
    
