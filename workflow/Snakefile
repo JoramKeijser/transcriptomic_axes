@@ -1,65 +1,35 @@
-SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
-DATASETS = ["bugeon", "bakken",  "tosches", "tasic","colquitt"] #, "yao", , ,
+# Figure 2: PCA
+DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt"]
+# TODO: save e.g. gene lists to scratchpath 
 
-
-rule state_modulation:
+rule intersect_genes:
     input:
-        data_dir = "data/bugeon/"
-    params:
-        stimulus = "Blank"
+        expand("results/pandas/genes_{dataset}.csv", 
+        dataset=[dataset for dataset in DATASETS if dataset!="bugeon"]),
     output:
-        data = "results/pandas/activity.h5ad",
-        figure = "figures/figure1/state_modulation.png"
+        shared_genes="results/pandas/shared_genes.txt",
     script:
-        "fig1_state_modulation.py"
+        "fig2_intersect_genes.py"
 
-rule example_trial:
+
+rule datasets_table:
     input:
-        "data/bugeon/SB026/2019-10-16/"
-    params:
-        experiment = "SB026/2019-10-16/",
-        stimulus = "Blank"
+        expand("results/pandas/overview_{dataset}.csv", dataset=DATASETS),
     output:
-        figure = "figures/figure1/example_trial.png"
+        table="results/pandas/overview.csv",
+        latex="results/pandas/overview.tex",
     script:
-        'fig1_example_trial.py'
+        "fig2_dataset_table.py"
 
-rule preprocess:
-    input: data_dir = "data/bugeon/"
-    output: anndata = "data/anndata/bugeon.h5ad"
-    script: "preprocess_bugeon.py"
 
-rule pca:
+rule datasets:
     input:
-        figdir = "figures/figure1/",
-        transcriptomics = "data/anndata/bugeon.h5ad",
-        activity = "results/pandas/activity.h5ad"
-    params:
-        transform = lambda wildcards : wildcards.transform
+        anndata="data/anndata/{dataset}.h5ad",
     output:
-        annotated = "results/anndata/bugeon_{transform}.h5ad",
-        by_subtype = "results/pandas/bugeon_by_subtype_{transform}.csv",
-        pca_subclass = "figures/figure1/pca_subclass_{transform}.png",
-        pca_modulation = "figures/figure1/pca_modulation_{transform}.png",
-        regression = "figures/figure1/predict_mod_{transform}.png",            
-    script:
-        'fig1_pca.py'
-
-# TODO: fix problem that we now only have bugeon_log 
-
-rule regression:
-    # TODO: fix num_subsets hard coding
-    input: 
-        "results/anndata/bugeon_log.h5ad"
-    output: 
-        "figures/figure1/regression_All.png",
-        expand("figures/figure1/regression_{subclass}.png",
-            subclass=SUBCLASSES, transform=['log']),
-        "figures/figure1/subclass_corr.png",
-        #"figures/figure1/subclass_corr_sample.png",
-        #TODO: fix mean by subtype.
-        #by_subtype = "results/pandas/bugeon_by_subtype.csv"
+        figure="figures/figure2/QC_{dataset}.png",
+        table="results/pandas/overview_{dataset}.csv",
+        genes="results/pandas/genes_{dataset}.csv",
     params:
-        n_subsets="{n_subsets}"
+        dataset=lambda wildcards: wildcards.dataset,
     script:
-        "fig1_regression.py"
+        "fig2_dataset_stats.py"
