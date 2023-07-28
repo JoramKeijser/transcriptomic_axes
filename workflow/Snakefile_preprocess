@@ -1,0 +1,68 @@
+# Raw data to anndata
+DATASETS = ["bakken", "bugeon", "colquitt", "tasic", "tosches"]
+
+
+rule preprocess:
+    input:
+        expand("data/anndata/dataset", datasets=DATASETS),
+
+
+rule pp_bugeon:
+    input:
+        data_dir="data/bugeon/",
+    output:
+        anndata="data/anndata/bugeon.h5ad",
+    script:
+        "preprocess_bugeon.py"
+
+
+rule pp_tasic:
+    input:
+        exons="data/tasic/mouse_VISp_2018-06-14_exon-matrix.csv",
+        introns="data/tasic/mouse_VISp_2018-06-14_intron-matrix.csv",
+        genes="data/tasic/mouse_VISp_2018-06-14_genes-rows.csv",
+        cells="data/tasic/mouse_VISp_2018-06-14_samples-columns.csv",
+    output:
+        anndata="data/anndata/tasic.h5ad",
+        hv_genes="results/gene_lists/tasic_hvgs.txt",
+    script:
+        "preprocess_tasic.py"
+
+
+rule extract_tosches:
+    input:
+        robj="data/tosches/turtle.neurons.Robj",
+    output:
+        counts="data/tosches/counts.csv",
+        metadata="data/tosches/metadata.csv",
+    script:
+        "extract_tosches.R"
+
+
+rule pp_tosches:  #TODO: combine with extract
+    input:
+        counts="data/tosches/counts.csv",
+        metadata="data/tosches/metadata.csv",
+    output:
+        anndata="data/anndata/tosches.h5ad",
+    script:
+        "preprocess_tosches.py"
+
+
+rule pp_colquitt:
+    input:
+        data="data/colquitt/HVC_RA_RNA_counts.csv",
+    output:
+        anndata="data/anndata/colquitt.h5ad",
+    script:
+        "preprocess_colquitt.py"
+
+
+rule pp_bakken:
+    input:
+        counts="data/bakken/matrix.csv",
+        metadata="data/bakken/metadata.csv",
+    output:
+        anndata="data/anndata/bakken.h5ad",
+    script:
+        "preprocess_bakken.py"
