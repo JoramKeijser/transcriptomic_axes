@@ -1,6 +1,26 @@
 # Figure 2: PCA
 DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt"]
 # TODO: save e.g. gene lists to scratchpath 
+species = {'colquitt': "Zebra finch", "tosches": "Turtle", 
+            "tasic": "Mouse", "bugeon": "Mouse L1-3", 
+            "bakken": "Human"}
+
+rule figure2:
+    input:
+        expand("figures/figure2/pca_{dataset}.png", 
+        dataset=[dataset for dataset in DATASETS if dataset!="bugeon"])
+
+rule pca:
+    input:
+        raw_anndata = "data/anndata/{dataset}.h5ad",
+        shared_genes="results/pandas/shared_genes.txt"
+    params:
+        species = lambda wildcards : species[wildcards.dataset]
+    output:
+        figure = "figures/figure2/pca_{dataset}.png",
+        anndata = "results/anndata/{dataset}.h5ad",
+    script:
+        "fig2_pca.py"
 
 rule intersect_genes:
     input:
