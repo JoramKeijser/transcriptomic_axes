@@ -82,13 +82,15 @@ def main(args):
     sns.despine()
     sc.pl.pca(bugeon, color='State modulation', title = "State modulation",
                 vmin=-0.25, vmax=0.55, size=marker_size,
-                save=f"_modulation_{transform}.png", show=False, 
+                save=False, show=False, 
                 ax=ax, annotate_var_explained=True)
     fig.tight_layout()
     plt.savefig(snakemake.output.pca_modulation)
     
     # Group by subtype so we can annotate with receptors from Tasic
-    by_subtype = bugeon.obs.groupby("Subtype").mean()
+    df = bugeon.obs.drop("Subclass", axis="columns")
+    by_subtype = bugeon.obs[['Subtype', 'State modulation', 'PC1']].groupby("Subtype").mean()
+    #by_subtype = bugeon.obs.groupby("Subtype").mean()
     by_subtype['Subclass'] = [subtype.split("-")[0] for subtype in by_subtype.index]
     by_subtype['Subclass'] = by_subtype['Subclass'].replace({'Serpinf1': 'Vip'})
     by_subtype['Subclass'] = by_subtype['Subclass'].astype("category")
@@ -96,8 +98,43 @@ def main(args):
     by_subtype['Subclass'] = by_subtype['Subclass'].cat.reorder_categories(subclass_order)
     by_subtype.to_csv(snakemake.output.by_subtype)
 
-    
-    # Save
+
+    print("Predicting modulation")
+    inch_to_cm = 1 #2.54
+    fontsize = 25
+    modulation = 'State modulation'
+    print(f"Predict {modulation} from tPCs")
+    dropped_na = by_subtype.dropna() 
+    dropped_na['Subclass'] = by_subtype['Subclass'].cat.reorder_categories(subclass_order)
+    fig, ax = plt.subplots(figsize=(5/inch_to_cm, 4/inch_to_cm))
+    sns.scatterplot(x='PC1', y=modulation,  
+        data=by_subtype, ax=ax, hue="Subclass", legend=None, alpha=alpha, s=marker_size)
+    x = dropped_na['PC1'].to_numpy()[:,None]
+    y = dropped_na[modulation].to_numpy()
+    R2, x_to_plot, y_to_plot = regression_tools.leave_one_out_lr(x, y)
+    print(f"R^2 subtypes: {R2:0.3f}")
+    ax.plot(x_to_plot, y_to_plot, color='black', alpha=alpha)
+    # Test R2
+    corr_test = pearsonr(np.squeeze(x), y)
+    ax.set_title(f"$R^2$ = {R2:0.2f} r = {corr_test.statistic:0.2f} ", fontsize=fontsize)
+    print(corr_test)
+    # Label axes
+    ax.set_ylabel(modulation, fontsize=fontsize)
+    ax.set_xlabel("tPC1", fontsize=fontsize)
+    sns.despine()
+    fig.tight_layout()
+    plt.savefig(snakemake.output.regression, dpi=300)
+
+
+    # Individual neurons TODO: log it
+    print(f"n = {np.sum(~bugeon.obs[modulation].isna())} neurons")
+    idx = ~bugeon.obs[modulation].isna()
+    x = bugeon.obs['PC1'].to_numpy()[idx,None]
+    y = bugeon.obs[modulation].to_numpy()[idx]
+    R2 = regression_tools.leave_one_out_lr(x, y)[0]
+    print(f"R^2 individual neurons: {R2:0.2f}")
+
+    #TODO: successive dimensions
 
    
 if __name__ == "__main__":
