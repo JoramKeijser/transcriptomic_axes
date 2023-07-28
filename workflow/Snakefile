@@ -1,5 +1,5 @@
 SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
-DATASETS = ["bugeon", "bakken", "colquitt", "tosches"] #, "yao", "tasic", 
+DATASETS = ["bugeon", "bakken",  "tosches", "tasic","colquitt"] #, "yao", , ,
 
 rule download_all:
     # TODO: map in a convenient way - e.g. map from csv 
@@ -23,11 +23,11 @@ rule download_tasic:
         """
         mkdir {output}
         wget -P {output} https://celltypes.brain-map.org/api/v2/well_known_file_download/694413985
-        file-roller -h {output}/694413985 
-        mv {output}/694413985_FILES/* {output} 
-        rm -r {output}/694413985_FILES
+        7z x {output}/694413985 {output}
         rm -r {output}/694413985 
+        mv mouse*.{{txt,csv}} data/tasic/
         """
+
 
 rule download_bakken:
     output:
