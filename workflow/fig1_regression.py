@@ -91,15 +91,15 @@ def main(args):
     plt.savefig(snakemake.output[-2], dpi=300) #figdir + "subclass_corr.png"
 
 
-    
     subclasses = bugeon.obs['Subclass'].cat.categories
+    n_subsets = snakemake.params.n_subsets
     R2_sub = {}
     for i, subclass in enumerate(subclasses):
         obs = bugeon[bugeon.obs['Subclass'] == subclass].obs
         n_subclass = obs.shape[0]
         # Randomly sample from bugeon
-        R2_sub[subclass] = np.zeros((snakemake.params.n_subsets, 1))
-        for s in range(snakemake.params.n_subsets):
+        R2_sub[subclass] = np.zeros((n_subsets, 1))
+        for s in range(n_subsets):
             bugeon_subsample = sc.pp.subsample(bugeon, n_obs = n_subclass, copy=True, random_state = s)
             x = np.array(bugeon_subsample.obs['tPC1'])[:,None]
             y = bugeon_subsample.obs['State modulation']
@@ -108,7 +108,7 @@ def main(args):
             R2_sub[subclass][s], x_to_plot, y_to_plot = regression_tools.leave_one_out_lr(x, y)
         print(f"{subclass}: n = {n_subclass}, p = {np.mean(R2_sub[subclass] <= R2s[i]):0.4f}")
         # Add to df
-        data = np.concatenate((R2_sub[subclass], np.array([subclass] * args.n_subsets)[:,None]), axis=1)
+        data = np.concatenate((R2_sub[subclass], np.array([subclass] * n_subsets)[:,None]), axis=1)
         if i == 0:
             df = pd.DataFrame(data, columns=['R2', 'Subclass'])
         else:
