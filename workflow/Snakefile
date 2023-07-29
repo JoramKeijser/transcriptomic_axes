@@ -1,31 +1,77 @@
 # Figure 2: PCA
-DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt"]
+DATASETS = ["bakken", "tosches", "tasic", "colquitt"]
 # TODO: save e.g. gene lists to scratchpath 
 species = {'colquitt': "Zebra finch", "tosches": "Turtle", 
             "tasic": "Mouse", "bugeon": "Mouse L1-3", 
             "bakken": "Human"}
+CONTROLS = ['complete', 'meis2', 'abundance', 'depth'] 
+DESCRIPTION = {"complete": "", "meis2": "No Meis2", 
+    "abundance": "Matched Abundance", "depth": "Matched Depth"}
+# TODO: flag to avoid naming "complete"
 
 rule figure2:
     input:
-        expand("figures/figure2/pca_{dataset}.png", 
-        dataset=[dataset for dataset in DATASETS if dataset!="bugeon"])
+        expand("figures/figure2/pca_{dataset}_{control}.png", 
+        dataset=DATASETS, control=CONTROLS),
+        expand("figures/figure2/principal_angles_{control}.png", 
+        control=CONTROLS),
+        expand("figures/figure2/cross_variance_{control}.png", 
+        control=CONTROLS),
+        expand("figures/figure2/compare_angles_{control}.png", 
+        control=['meis2', 'abundance', 'depth'] )
+        
+rule comparison:
+    input:
+        cv_complete = 'results/pc_comparison/cross_variance_complete.pickle',
+        angles_complete = 'results/pc_comparison/principal_angles_complete.pickle',
+        angles_control = 'results/pc_comparison/principal_angles_{control}.pickle',
+        cv_control = 'results/pc_comparison/cross_variance_{control}.pickle'
+    params:
+        control = lambda wildcards : DESCRIPTION[wildcards.control]
+    output:
+        angles = "figures/figure2/compare_angles_{control}.png",
+        cv = "figures/figure2/compare_variance_{control}.png"
+    script:
+        "fig2_comparison.py"
+
+
+rule principal_angles:
+    input:
+        expand("results/anndata/{dataset}_{{control}}.h5ad",
+            dataset=DATASETS)
+    output:
+        figure= "figures/figure2/principal_angles_{control}.png",
+        angles = 'results/pc_comparison/principal_angles_{control}.pickle'
+    script:
+        "fig2_principal_angles.py"
+
+rule cross_variance:
+    input:
+        expand("results/anndata/{dataset}_{{control}}.h5ad",
+            dataset=DATASETS)
+    output:
+        figure= "figures/figure2/cross_variance_{control}.png",
+        data = 'results/pc_comparison/cross_variance_{control}.pickle'
+    script:
+        "fig2_cross_variance.py"
 
 rule pca:
     input:
         raw_anndata = "data/anndata/{dataset}.h5ad",
         shared_genes="results/pandas/shared_genes.txt"
     params:
-        species = lambda wildcards : species[wildcards.dataset]
+        species = lambda wildcards : species[wildcards.dataset],
+        control = lambda wildcards : wildcards.control
     output:
-        figure = "figures/figure2/pca_{dataset}.png",
-        anndata = "results/anndata/{dataset}.h5ad",
+        figure = "figures/figure2/pca_{dataset}_{control}.png",
+        anndata = "results/anndata/{dataset}_{control}.h5ad",
     script:
         "fig2_pca.py"
 
 rule intersect_genes:
     input:
         expand("results/pandas/genes_{dataset}.csv", 
-        dataset=[dataset for dataset in DATASETS if dataset!="bugeon"]),
+        dataset=DATASETS),
     output:
         shared_genes="results/pandas/shared_genes.txt",
     script:

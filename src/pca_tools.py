@@ -14,16 +14,13 @@ def compare_variance(adata_ref, adata, pca_ref, n_pcs = 10):
         """
         # get PCs from reference
         C = pca_ref.get_covariance()
-        variance_pc1 = pca_ref.components_[0]@C@pca_ref.components_[0] 
-        # Fit PCA
-        if 'highly_variable' in adata_ref.var.columns:
-            adata_hvg = adata[:, adata_ref.var.highly_variable]    
-            pca = PCA().fit(adata_hvg.X)
-        else:
-            pca = PCA().fit(adata.X)
+        variance = pca_ref.components_[0]@C@pca_ref.components_[0] 
+        # PCA on other dataset
+        pca = PCA().fit(adata.X)
         PCs = pca.components_
         cross_variance = np.diag(pca.components_[:n_pcs]@C@pca.components_[:n_pcs].T)  
-        return cross_variance / variance_pc1 
+        # Normalize by first ref. PC
+        return cross_variance / variance 
 
 
 def orient_axes(adata):

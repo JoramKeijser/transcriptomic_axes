@@ -11,27 +11,39 @@ import seaborn as sns
 from src import constants, pca_tools
 sns.set_palette("colorblind")
 sns.set_context("poster")
-sc.settings.figdir= "./figures/figure2/"
-sc.settings.dpi_save= 300
+sc.settings.dpi_save = 300
 
 
- def subsample(adata, subclasses = ['Pvalb', 'Sst', 'Vip']):
-        counts = adata.obs['Subclass'].value_counts()
-        smallest_n = min(counts[subclasses])
-        adata_sub = ad.AnnData()
-        for i, subclass in enumerate(subclasses):
-            idx = np.where(adata.obs["Subclass"] == subclass)[0]
-            select = np.random.choice(idx, size = (smallest_n, ), replace=False)
-            if i == 0:
-                adata_sub = adata[select]
-            else:
-                adata_sub = ad.concat((adata_sub, adata[select]))
-        return adata_sub
+def subsample(adata, subclasses = ['Pvalb', 'Sst', 'Vip']):
+    counts = adata.obs['Subclass'].value_counts()
+    smallest_n = min(counts[subclasses])
+    adata_sub = ad.AnnData()
+    for i, subclass in enumerate(subclasses):
+        idx = np.where(adata.obs["Subclass"] == subclass)[0]
+        select = np.random.choice(idx, size = (smallest_n, ), replace=False)
+        if i == 0:
+            adata_sub = adata[select]
+        else:
+            adata_sub = ad.concat((adata_sub, adata[select]))
+    return adata_sub
 
 #    title = species[savename]
 shared_genes = np.loadtxt(snakemake.input.shared_genes, dtype=str)
 adata = ad.read_h5ad(snakemake.input.raw_anndata)
 adata = adata[:, shared_genes] # restrict to shared genes
+if snakemake.params.control == "meis":
+    n = np.sum(adata.obs['Subclass'] == "Meis2")
+    print(f"Exclude {n} Meis2 cells")
+    adata = adata[adata.obs['Subclass'] != "Meis2"]
+elif snakemake.params.control == "abundance":
+    adata = subsample(adata)
+elif snakemake.params.control == "depth":
+    fewest_reads = 3150.5 # Colquitt
+    reads = np.median(adata.X.sum(1))
+    relative_depth = fewest_reads / reads
+    print(f"Depth: {reads}, Relative depth: {relative_depth:1.0E}")
+    if relative_depth < 1:
+        adata.X = np.random.binomial(np.array(adata.X, dtype=int), p = relative_depth)
 
 # Preserve the order
 subclass_order = ['Pvalb', 'Sst', 'Lamp5', 'Vip', 'Sncg', 'Meis2']
@@ -52,6 +64,7 @@ if np.sum(adata.obs['Subclass'] == "Meis2") > 0:
 adata = pca_tools.orient_axes(adata)
 print(snakemake.input.raw_anndata)
 print(f"First 2 tPCs capture {adata.uns['pca']['variance_ratio'][:2].sum()*100:.1f}%")
+#TODO: write to log file
 fig, ax = plt.subplots()
 sns.despine()
 #if savename.startswith("tosches"):
