@@ -1,5 +1,7 @@
 # Figure 2: PCA
 DATASETS = ["bakken", "tosches", "tasic", "colquitt"]
+REFERENCE = 'tasic'
+OTHERS = [d for d in DATASETS if d != REFERENCE]
 # TODO: save e.g. gene lists to scratchpath 
 species = {'colquitt': "Zebra finch", "tosches": "Turtle", 
             "tasic": "Mouse", "bugeon": "Mouse L1-3", 
@@ -20,33 +22,22 @@ rule figure2:
         expand("figures/figure2/compare_angles_{control}.png", 
         control=['meis2', 'abundance', 'depth'] )
 
+
 rule integrate:
     # TODO: Name input files - or not
     input:
-        reference = "data/anndata/tasic.h5ad",
+        reference = f"data/anndata/{REFERENCE}.h5ad",
         others = expand("data/anndata/{dataset}.h5ad", 
-            dataset=[d for d in DATASETS if d != "tasic"]) # 
+            dataset=OTHERS)  
     params:
-        method = "cca" #lambda wildcards : wildcards.method  
+        method = lambda wildcards : wildcards.method  
     output:
-        #reference = "results/anndata/tasic_integrated.h5ad"
         expand(
-            "results/anndata/{dataset}_integrated.h5ad",
+            "results/anndata/{dataset}_integrated_{{method}}.h5ad",
             dataset = DATASETS
-        )
-        # How to save them?
-        #others = expand("results/anndata/{dataset}_integrated.h5ad", 
-        #dataset=["tosches"])     
+        ) 
     script:
         "fig2_integrate.R"
-
-# rule python2r:
-#     input:
-#         anndata = "data/anndata/{dataset}.h5ad"
-#     output:
-#        seurat = "data/seurat/{dataset}.h5seurat"
-#     script:
-#         "fig2_anndata2seurat.R"
 
 
 rule fig2_dag:
