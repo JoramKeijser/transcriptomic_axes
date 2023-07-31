@@ -8,7 +8,7 @@ import scanpy as sc
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src import constants, pca_tools
+from src import constants, pca_tools, data_tools
 sns.set_palette("colorblind")
 sns.set_context("poster")
 sc.settings.dpi_save = 300
@@ -44,7 +44,16 @@ elif snakemake.params.control == "depth":
     print(f"Depth: {reads}, Relative depth: {relative_depth:1.0E}")
     if relative_depth < 1:
         adata.X = np.random.binomial(np.array(adata.X, dtype=int), p = relative_depth)
-
+elif snakemake.params.control == "bugeonabundance":
+    bugeon = ad.read_h5ad(snakemake.input.bugeon)
+    bugeon_number = bugeon.obs['Subclass'].value_counts() 
+    adata_sub = {}
+    for subclass in bugeon.obs['Subclass'].cat.categories:
+        adata_sub[subclass] = adata[adata.obs['Subclass'] == subclass]
+        sc.pp.subsample(adata_sub[subclass], n_obs = bugeon_number[subclass])
+    adata = ad.concat(list(adata_sub.values()))
+    adata = data_tools.organize_subclass_labels(adata) 
+    
 # Preserve the order
 subclass_order = ['Pvalb', 'Sst', 'Lamp5', 'Vip', 'Sncg', 'Meis2']
 adata.obs['Subclass'] = adata.obs['Subclass'].astype("category")

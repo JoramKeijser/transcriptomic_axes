@@ -9,13 +9,10 @@ CONTROLS = ['complete', '72g']
 
 def genelist_from_label(wildcards):
     lists = {"complete": "results/gene_lists/shared_mouse_genes.txt",
-            "72g": "data/bugeon/genes.names.txt"}
+            "72g": "data/bugeon/genes.names.txt",
+            "bugeonabundance": "results/gene_lists/shared_mouse_genes.txt"}
     return lists[wildcards.control]
 
-def dataset_from_label0(control):
-    lists = {"complete": ["tasic", "yao"],
-            "72g": ["tasic", "yao", "bugeon"] }
-    return lists[control]
 
 def datasets_from_condition(wildcards):
     lists = {"complete": ["tasic", "yao"],
@@ -60,7 +57,8 @@ rule principal_angles:
 rule pca:
     input:
         raw_anndata = "data/anndata/{dataset}.h5ad",
-        shared_genes=genelist_from_label
+        shared_genes=genelist_from_label,
+        bugeon = "data/anndata/bugeon.h5ad"
     params:
         species = lambda wildcards : species[wildcards.dataset],
         control = lambda wildcards : wildcards.control
