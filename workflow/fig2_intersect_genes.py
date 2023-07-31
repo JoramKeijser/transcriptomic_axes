@@ -24,7 +24,6 @@ def main():
             new_genes = np.loadtxt(genelist, dtype=str)
             shared_genes = set(shared_genes).intersection(new_genes)
 
-        
     print(f"Found {len(shared_genes)} shared genes")
     np.savetxt(snakemake.output.shared_genes, 
                list(shared_genes), fmt="%s")
