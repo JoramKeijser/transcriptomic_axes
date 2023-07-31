@@ -1,11 +1,52 @@
 # Raw data to anndata
+import numpy as np
 DATASETS = ["bakken", "bugeon", "colquitt", "tasic", "tosches"]
+NUM_JOBS = 100
+NUM_CELLS = int(1169213/10) #1169213
+ROWS_PER_JOB = int(NUM_CELLS / NUM_JOBS)
+START_ROWS = np.arange(0, NUM_CELLS, ROWS_PER_JOB)
+
+rule num_rows:
+    input:
+        metadata = "data/yao/metadata.csv"
+    output:
+        "results/pandas/num_jobs.txt"
+    shell:
+        """
+        num_cells=$(wc -l < {input})
+        num_jobs=100
+        rows_per_job=$((num_cells/{{NUM_JOBS}}+1)) # >1/100th of the 1.16 m cells
+        echo $rows_per_job > {output}
+        """
 
 
 rule preprocess:
     input:
-        expand("data/anndata/dataset", datasets=DATASETS),
+        expand("data/anndata/dataset", datasets=DATASETS)
+    
 
+rule pp_yao: # Merge partitions. Could use rows per job here
+    input:
+        shared_genes = "results/pandas/shared_genes.txt", # TODO: from other file
+        files = expand("data/scratch/yao_{start}_{num}.h5ad", 
+            start=START_ROWS, num = ROWS_PER_JOB) 
+        # shared genes?
+    output:
+        anndata = "data/anndata/yao.h5ad"
+    script:
+        "preprocess_yao_combine.py"
+
+rule partition:
+    input: 
+        metadata = "data/yao/metadata.csv",
+        counts = "data/yao/expression_matrix.hdf5"
+    output: 
+        anndata = "data/scratch/yao_{start_row}_{num_rows}.h5ad"
+    params:
+        start_row = lambda wildcards : int(wildcards.start_row),
+        num_rows = lambda wildcards : int(wildcards.num_rows)
+    script:
+         "preprocess_yao_partition.py"
 
 rule pp_bugeon:
     input:

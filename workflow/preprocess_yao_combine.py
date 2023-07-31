@@ -1,0 +1,27 @@
+# Combine partitions
+import numpy as np
+import anndata as ad
+import pandas as pd
+import os
+import re
+import argparse
+from src import data_tools
+
+shared_genes = np.loadtxt(snakemake.input.shared_genes, dtype=str)
+files = snakemake.input.files
+adata = ad.read_h5ad(files.pop())
+shared_genes = list(set(shared_genes).intersection(adata.var_names))
+print("shared_genes", len(shared_genes))
+adata = adata[:, shared_genes]
+for i, file in enumerate(files):
+	next_adata = ad.read_h5ad(file)
+	# We know next_data has same genes as all others 
+	next_adata = next_adata[:, shared_genes]
+	adata = ad.concat((adata, next_adata))
+
+# Add missing subclasses
+adata = data_tools.organize_subclass_labels(adata)  
+print("Final:", adata.shape)
+adata.write_h5ad(snakemake.output.anndata)
+
+# Check that we didn't miss any interneurons TODO
