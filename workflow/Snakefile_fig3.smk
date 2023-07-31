@@ -10,7 +10,8 @@ CONTROLS = ['complete', '72g']
 def genelist_from_label(wildcards):
     lists = {"complete": "results/gene_lists/shared_mouse_genes.txt",
             "72g": "data/bugeon/genes.names.txt",
-            "bugeonabundance": "results/gene_lists/shared_mouse_genes.txt"}
+            "bugeonabundance": "results/gene_lists/shared_mouse_genes.txt",
+            "bugeonsst": "results/gene_lists/shared_mouse_genes.txt"}
     return lists[wildcards.control]
 
 

@@ -53,7 +53,13 @@ elif snakemake.params.control == "bugeonabundance":
         sc.pp.subsample(adata_sub[subclass], n_obs = bugeon_number[subclass])
     adata = ad.concat(list(adata_sub.values()))
     adata = data_tools.organize_subclass_labels(adata) 
-    
+elif snakemake.params.control == "bugeonsst":
+    bugeon = ad.read_h5ad(snakemake.input.bugeon)
+    sst_types = np.unique(bugeon[bugeon.obs['Subclass'] == "Sst"].obs['Subtype'])
+    idx = [(subtype in sst_types) or (subclass != "Sst") \
+           for (subclass, subtype) in zip(adata.obs['Subclass'], adata.obs['Subtype'])]
+    adata = adata[idx]
+
 # Preserve the order
 subclass_order = ['Pvalb', 'Sst', 'Lamp5', 'Vip', 'Sncg', 'Meis2']
 adata.obs['Subclass'] = adata.obs['Subclass'].astype("category")
