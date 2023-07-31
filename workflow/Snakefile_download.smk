@@ -18,6 +18,17 @@ rule download_bugeon:
         rm 38046633
         """
 
+rule download_hodge:
+    output:
+        directory("data/hodge")
+    shell:
+        """
+        wget -P {output} https://celltypes.brain-map.org/api/v2/well_known_file_download/694416044
+        7z x {output}/694416044 
+        mv human*.{{txt,csv}} {output}
+        rm -r {output}/694413985 
+        """
+
 # TODO: one rm line. Fix.
 rule download_tasic:
     output:
@@ -27,7 +38,7 @@ rule download_tasic:
         mkdir {output}
         wget -P {output} https://celltypes.brain-map.org/api/v2/well_known_file_download/694413985
         7z x {output}/694413985 
-        mv mouse*.{{txt,csv}} data/tasic/
+        mv mouse*.{{txt,csv}} {output}
         rm -r {output}/694413985 
         """
 

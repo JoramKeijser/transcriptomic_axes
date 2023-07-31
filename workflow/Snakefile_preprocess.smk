@@ -1,6 +1,6 @@
 # Raw data to anndata
 import numpy as np
-DATASETS = ["bakken", "bugeon", "colquitt", "tasic", "tosches"]
+DATASETS = ["bakken", "bugeon", "colquitt", "hodge", "tasic", "tosches"]
 NUM_JOBS = 100
 NUM_CELLS = int(1169213/10) #1169213
 ROWS_PER_JOB = int(NUM_CELLS / NUM_JOBS)
@@ -23,7 +23,6 @@ rule num_rows:
 rule preprocess:
     input:
         expand("data/anndata/dataset", datasets=DATASETS)
-    
 
 rule pp_yao: # Merge partitions. Could use rows per job here
     input:
@@ -56,6 +55,18 @@ rule pp_bugeon:
     script:
         "preprocess_bugeon.py"
 
+    
+rule pp_hodge:
+    input:
+        genes = "data/hodge/human_MTG_2018-06-14_genes-rows.csv",
+        exons = "data/hodge/human_MTG_2018-06-14_exon-matrix.csv",
+        introns = "data/hodge/human_MTG_2018-06-14_intron-matrix.csv",
+        cells = "data/hodge/human_MTG_2018-06-14_samples-columns.csv",
+        shared_genes = "results/pandas/shared_genes.txt", # TODO: from other file
+    output:
+        anndata="data/anndata/hodge.h5ad",
+    script:
+        "preprocess_hodge.py"
 
 rule pp_tasic:
     input:
