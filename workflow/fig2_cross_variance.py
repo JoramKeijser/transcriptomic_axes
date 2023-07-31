@@ -18,8 +18,6 @@ sc.settings.dpi_save= 300
 
 
 def main():
-    datadir = "./results/anndata/"
-    savedir = "./results/anndata/"
 
     species = {'colquitt': "Zebra finch", "tosches": "Turtle", 
                 "tasic": "Mouse", "bakken": "Human"}

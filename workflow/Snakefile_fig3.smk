@@ -5,6 +5,7 @@ DATASETS = ["tasic", "yao", "bugeon"]
 species = {"tasic": "VISp L1-6", "bugeon": "VISp L1-3", 
              "yao": "Ctx & Hpc"}
 CONTROLS = ['complete', '72g']
+#TODO: bugeon_log -> bugeon
 
 def genelist_from_label(wildcards):
     lists = {"complete": "results/gene_lists/shared_mouse_genes.txt",

@@ -5,7 +5,7 @@ OTHERS = [d for d in DATASETS if d != REFERENCE]
 # TODO: save e.g. gene lists to scratchpath 
 species = {'colquitt': "Zebra finch", "tosches": "Turtle", 
             "tasic": "Mouse", "bugeon": "Mouse L1-3", 
-            "bakken": "Human"}
+            "bakken": "Human", "yao": "mouse"}
 CONTROLS = ['complete', 'meis2', 'abundance', 'depth'] 
 DESCRIPTION = {"complete": "", "meis2": "No Meis2", 
     "abundance": "Matched Abundance", "depth": "Matched Depth"}
@@ -66,9 +66,12 @@ rule comparison:
 
 
 rule principal_angles:
+    #TODO: use same script as fig3
     input:
         expand("results/anndata/{dataset}_{{control}}.h5ad",
             dataset=DATASETS)
+    params:
+        areas = species
     output:
         figure= "figures/figure2/principal_angles_{control}.png",
         angles = 'results/pc_comparison/principal_angles_{control}.pickle'
@@ -79,11 +82,14 @@ rule cross_variance:
     input:
         expand("results/anndata/{dataset}_{{control}}.h5ad",
             dataset=DATASETS)
+    params:
+        areas = species,
+        reference = "tasic"
     output:
         figure= "figures/figure2/cross_variance_{control}.png",
         data = 'results/pc_comparison/cross_variance_{control}.pickle'
     script:
-        "fig2_cross_variance.py"
+        "fig3_cross_variance.py"
 
 rule pca:
     input:
@@ -117,14 +123,13 @@ rule datasets_table:
     script:
         "fig2_dataset_table.py"
 
-
 rule datasets:
     input:
         anndata="data/anndata/{dataset}.h5ad",
     output:
         figure="figures/figure2/QC_{dataset}.png",
         table="results/pandas/overview_{dataset}.csv",
-        genes="results/pandas/genes_{dataset}.csv",
+        genes="results/gene_lists/genes_{dataset}.csv",
     params:
         dataset=lambda wildcards: wildcards.dataset,
     script:
