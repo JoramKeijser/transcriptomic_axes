@@ -2,24 +2,27 @@
 DATASETS = ["bakken", "tosches", "tasic", "colquitt"]
 REFERENCE = 'tasic'
 OTHERS = [d for d in DATASETS if d != REFERENCE]
-# TODO: save e.g. gene lists to scratchpath 
-species = {'colquitt': "Zebra finch", "tosches": "Turtle", 
-            "tasic": "Mouse", "bugeon": "Mouse L1-3", 
+# TODO: save e.g. gene lists to scratchpath
+species = {'colquitt': "Zebra finch", "tosches": "Turtle",
+            "tasic": "Mouse", "bugeon": "Mouse L1-3",
             "bakken": "Human", "yao": "mouse"}
-CONTROLS = ['complete', 'meis2', 'abundance', 'depth'] 
-DESCRIPTION = {"complete": "", "meis2": "No Meis2", 
+CONTROLS = ['complete', 'meis2', 'abundance', 'depth',
+    "integrated_rpca", "integrated_cca"]
+DESCRIPTION = {"complete": "", "meis2": "No Meis2",
+    "integrated_rpca": "Integrated rPCA",
+    "integrated_cca": "Integrated CCA",
     "abundance": "Matched Abundance", "depth": "Matched Depth"}
 # TODO: flag to avoid naming "complete"
 
 rule figure2:
     input:
-        expand("figures/figure2/pca_{dataset}_{control}.png", 
+        expand("figures/figure2/pca_{dataset}_{control}.png",
         dataset=DATASETS, control=CONTROLS),
-        expand("figures/figure2/principal_angles_{control}.png", 
+        expand("figures/figure2/principal_angles_{control}.png",
         control=CONTROLS),
-        expand("figures/figure2/cross_variance_{control}.png", 
+        expand("figures/figure2/cross_variance_{control}.png",
         control=CONTROLS),
-        expand("figures/figure2/compare_angles_{control}.png", 
+        expand("figures/figure2/compare_angles_{control}.png",
         control=['meis2', 'abundance', 'depth'] )
 
 
@@ -27,15 +30,15 @@ rule integrate:
     # TODO: Name input files - or not
     input:
         reference = f"data/anndata/{REFERENCE}.h5ad",
-        others = expand("data/anndata/{dataset}.h5ad", 
-            dataset=OTHERS)  
+        others = expand("data/anndata/{dataset}.h5ad",
+            dataset=OTHERS)
     params:
-        method = lambda wildcards : wildcards.method  
+        method = lambda wildcards : wildcards.method
     output:
         expand(
             "results/anndata/{dataset}_integrated_{{method}}.h5ad",
             dataset = DATASETS
-        ) 
+        )
     script:
         "fig2_integrate.R"
 
@@ -49,7 +52,7 @@ rule fig2_dag:
         """
         snakemake {input} --dag | dot -Tpng -Gdpi=300 > {output}
         """
-        
+
 rule comparison:
     input:
         cv_complete = 'results/pc_comparison/cross_variance_complete.pickle',
@@ -94,7 +97,7 @@ rule cross_variance:
 rule pca:
     input:
         raw_anndata = "data/anndata/{dataset}.h5ad",
-        shared_genes="results/pandas/shared_genes.txt"
+        shared_genes="results/gene_lists/shared_genes.txt"
     params:
         species = lambda wildcards : species[wildcards.dataset],
         control = lambda wildcards : wildcards.control
@@ -106,10 +109,10 @@ rule pca:
 
 rule intersect_genes:
     input:
-        expand("results/pandas/genes_{dataset}.csv", 
+        expand("results/pandas/genes_{dataset}.csv",
         dataset=DATASETS),
     output:
-        shared_genes="results/pandas/shared_genes.txt",
+        shared_genes="results/gene_lists/shared_genes.txt",
     script:
         "fig2_intersect_genes.py"
 
