@@ -1,7 +1,7 @@
 SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
 DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt"]  # , "yao", , ,
 TRANSFORMS = ["log", "raw"]
-
+#TODO: bugeon_log -> bugeon in pca rule
 
 rule figure1:
     input:

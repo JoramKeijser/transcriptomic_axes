@@ -27,6 +27,7 @@ rule preprocess:
 rule pp_yao: # Merge partitions. Could use rows per job here
     input:
         shared_genes = "results/pandas/shared_genes.txt", # TODO: from other file
+        bugeon_genes = "data/bugeon/genes.names.txt",
         files = expand("data/scratch/yao_{start}_{num}.h5ad", 
             start=START_ROWS, num = ROWS_PER_JOB) 
         # shared genes?
