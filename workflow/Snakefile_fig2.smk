@@ -28,6 +28,7 @@ rule figure2:
 
 rule integrate:
     # TODO: Name input files - or not
+    # TODO: still need to do PCA on each separately.
     input:
         reference = f"data/anndata/{REFERENCE}.h5ad",
         others = expand("data/anndata/{dataset}.h5ad",
@@ -74,7 +75,8 @@ rule principal_angles:
         expand("results/anndata/{dataset}_{{control}}.h5ad",
             dataset=DATASETS)
     params:
-        areas = species
+        areas = species,
+        reference = "tasic"
     output:
         figure= "figures/figure2/principal_angles_{control}.png",
         angles = 'results/pc_comparison/principal_angles_{control}.pickle'

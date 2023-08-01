@@ -13,8 +13,8 @@ sns.set_context("poster")
 sc.settings.figdir= "./figures/figure2/"
 sc.settings.dpi_save= 300
 
-species = {'colquitt': "Zebra finch", "tosches": "Turtle", 
-            "tasic": "Mouse", "bugeon": "Mouse L1-3", 
+species = {'colquitt': "Zebra finch", "tosches": "Turtle",
+            "tasic": "Mouse", "bugeon": "Mouse L1-3",
             "bakken": "Human"}
 def main(args):
     PC_subspace = {}
@@ -25,7 +25,7 @@ def main(args):
         PC_subspace[name] = adata.varm['PCs'][:, :constants.NUM_PCS]
 
     # Now compute principal angles wrt mouse data
-    reference = 'tasic'
+    reference = snakemake.params.reference
     remaining = np.sort([dataset for dataset in PC_subspace.keys() if dataset != reference])
 
     # Add random
@@ -33,12 +33,12 @@ def main(args):
     rng = np.random.RandomState(0)
     idx = rng.permutation(np.arange(n_genes))
     label = 'Chance'
-    plt.plot(subspace_angles(PC_subspace[reference][idx], PC_subspace[reference])[::-1] * 180 / np.pi, 
+    plt.plot(subspace_angles(PC_subspace[reference][idx], PC_subspace[reference])[::-1] * 180 / np.pi,
                 label = label, color='black', linestyle = ":")
-            
+
     colors = sns.color_palette("Set2")
     for i, name in enumerate(remaining):
-        plt.plot(subspace_angles(PC_subspace[name], PC_subspace[reference])[::-1] * 180 / np.pi, 
+        plt.plot(subspace_angles(PC_subspace[name], PC_subspace[reference])[::-1] * 180 / np.pi,
                 label = species[name], color=colors[i+1])
 
     plt.xlabel("tPC subspace dimension")
@@ -55,7 +55,7 @@ def main(args):
         angles[organism] = subspace_angles(PC_subspace['tasic'], PC_subspace[name])[::-1] * 180 / np.pi
     with open(snakemake.output.angles, 'wb') as handle:
         pickle.dump(angles, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
