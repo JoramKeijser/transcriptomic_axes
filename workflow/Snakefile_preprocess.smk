@@ -20,7 +20,7 @@ rule num_rows:
         """
 
 
-rule preprocess:
+rule all:
     input:
         expand("data/anndata/dataset", datasets=DATASETS)
 

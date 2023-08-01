@@ -5,7 +5,7 @@ species = {'colquitt': "Zebra finch", "tosches": "Turtle",
             "tasic": "Mouse VISp L1-6", "bugeon": "Mouse VISp L1-3",
             "bakken": "Human", "yao": "Mouse Ctx & Hpc"}
 
-rule figure4:
+rule all:
     input:
         expand("figures/figure4/dotplot_{dataset}.png",
         dataset=DATASETS

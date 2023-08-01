@@ -3,8 +3,7 @@ DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt",
             "yao", "hodge"]  # , "yao", , ,
 
 
-rule download_all:
-    # TODO: map in a convenient way - e.g. map from csv
+rule all:
     input:
         expand("data/{dataset}", dataset=DATASETS),
 

@@ -35,6 +35,14 @@ def areas_from_condition(wildcards):
     }
     return areas[wildcards.control]
 
+rule all:
+    input:
+        expand("figures/figure3/cross_variance_{control}.png",
+        control = CONTROLS),
+        expand("figures/figure3/principal_angles_{control}.png",
+        control = CONTROLS),
+        expand("figures/figure3/pca_{dataset}_{control}.png",
+            dataset=DATASETS, control=CONTROLS)
 
 rule cross_variance:
     input:

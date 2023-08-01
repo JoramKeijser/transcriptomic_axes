@@ -14,7 +14,7 @@ DESCRIPTION = {"complete": "", "meis2": "No Meis2",
     "abundance": "Matched Abundance", "depth": "Matched Depth"}
 # TODO: flag to avoid naming "complete"
 
-rule figure2:
+rule all:
     input:
         expand("figures/figure2/pca_{dataset}_{control}.png",
         dataset=DATASETS, control=CONTROLS),

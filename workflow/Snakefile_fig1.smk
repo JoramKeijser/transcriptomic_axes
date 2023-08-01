@@ -3,7 +3,7 @@ DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt"]  # , "yao", , ,
 TRANSFORMS = ["log", "raw"]
 #TODO: bugeon_log -> bugeon in pca rule
 
-rule figure1:
+rule all:
     input:
         "results/pandas/activity.h5ad",
         "figures/figure1/state_modulation.png",
