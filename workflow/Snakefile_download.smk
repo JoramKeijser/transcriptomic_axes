@@ -1,5 +1,6 @@
 SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
-DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt"]  # , "yao", , ,
+DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt",
+            "yao", "hodge"]  # , "yao", , ,
 
 
 rule download_all:
@@ -24,9 +25,9 @@ rule download_hodge:
     shell:
         """
         wget -P {output} https://celltypes.brain-map.org/api/v2/well_known_file_download/694416044
-        7z x {output}/694416044 
+        7z x {output}/694416044
         mv human*.{{txt,csv}} {output}
-        rm -r {output}/694413985 
+        rm -r {output}/694413985
         """
 
 # TODO: one rm line. Fix.
@@ -37,9 +38,9 @@ rule download_tasic:
         """
         mkdir {output}
         wget -P {output} https://celltypes.brain-map.org/api/v2/well_known_file_download/694413985
-        7z x {output}/694413985 
+        7z x {output}/694413985
         mv mouse*.{{txt,csv}} {output}
-        rm -r {output}/694413985 
+        rm -r {output}/694413985
         """
 
 
@@ -83,5 +84,3 @@ rule download_yao:
         wget -P {output} https://idk-etl-prod-download-bucket.s3.amazonaws.com/aibs_mouse_ctx-hpf_10x/metadata.csv
         wget -P {output} https://idk-etl-prod-download-bucket.s3.amazonaws.com/aibs_mouse_ctx-hpf_10x/expression_matrix.hdf5
         """
-
-#wget -P {output} https://idk-etl-prod-download-bucket.s3.amazonaws.com/aibs_mouse_ctx-hpf_10x/matrix.csv
