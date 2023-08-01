@@ -26,7 +26,7 @@ sample_names = np.array(f['data']['samples'], dtype=str)
 f = h5py.File(snakemake.input.counts, "r")
 counts = f['data']['counts'][:, START:END]
 counts = counts.T
-counts = pd.DataFrame(counts, index = sample_names[START:END], columns = gene_names)
+counts = pd.DataFrame(counts, index = sample_names[START:END], columns = gene_names, dtype = int)
 # Subset GABA
 shared_ids = list(set(gaba_ids).intersection(counts.index))
 counts = counts.loc[shared_ids]
@@ -43,4 +43,3 @@ adata.obs['Subclass'] = adata.obs['Subclass'].cat.add_categories(missing_subclas
 adata.obs['Subclass'] = adata.obs['Subclass'].cat.reorder_categories(subclass_order)
 
 adata.write_h5ad(snakemake.output.anndata)
-

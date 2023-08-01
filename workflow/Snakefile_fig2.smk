@@ -1,11 +1,11 @@
 # Figure 2: PCA
 DATASETS = ["bakken", "tosches", "tasic", "colquitt"]
 REFERENCE = 'tasic'
-OTHERS = [d for d in DATASETS if d != REFERENCE]
+OTHERS = ["bakken", "tosches", "colquitt"]
 # TODO: save e.g. gene lists to scratchpath
 species = {'colquitt': "Zebra finch", "tosches": "Turtle",
             "tasic": "Mouse", "bugeon": "Mouse L1-3",
-            "bakken": "Human", "yao": "mouse"}
+            "bakken": "Human", "yao": "mouse", "hodge": "Human MTG"}
 CONTROLS = ['complete', 'meis2', 'abundance', 'depth',
     "integrated_rpca", "integrated_cca"]
 DESCRIPTION = {"complete": "", "meis2": "No Meis2",

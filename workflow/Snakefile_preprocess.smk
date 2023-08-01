@@ -2,7 +2,7 @@
 import numpy as np
 DATASETS = ["bakken", "bugeon", "colquitt", "hodge", "tasic", "tosches"]
 NUM_JOBS = 100
-NUM_CELLS = int(1169213/10) #1169213
+NUM_CELLS = int(1169213/2) #1169213
 ROWS_PER_JOB = int(NUM_CELLS / NUM_JOBS)
 START_ROWS = np.arange(0, NUM_CELLS, ROWS_PER_JOB)
 
@@ -28,8 +28,8 @@ rule pp_yao: # Merge partitions. Could use rows per job here
     input:
         shared_genes = "results/gene_lists/shared_genes.txt", # TODO: from other file
         bugeon_genes = "data/bugeon/genes.names.txt",
-        files = expand("data/scratch/yao_{start}_{num}.h5ad", 
-            start=START_ROWS, num = ROWS_PER_JOB) 
+        files = expand("data/scratch/yao_{start}_{num}.h5ad",
+            start=START_ROWS, num = ROWS_PER_JOB)
         # shared genes?
     output:
         anndata = "data/anndata/yao.h5ad"
@@ -37,10 +37,10 @@ rule pp_yao: # Merge partitions. Could use rows per job here
         "preprocess_yao_combine.py"
 
 rule partition:
-    input: 
+    input:
         metadata = "data/yao/metadata.csv",
         counts = "data/yao/expression_matrix.hdf5"
-    output: 
+    output:
         anndata = "data/scratch/yao_{start_row}_{num_rows}.h5ad"
     params:
         start_row = lambda wildcards : int(wildcards.start_row),
@@ -56,7 +56,7 @@ rule pp_bugeon:
     script:
         "preprocess_bugeon.py"
 
-    
+
 rule pp_hodge:
     input:
         genes = "data/hodge/human_MTG_2018-06-14_genes-rows.csv",
