@@ -46,3 +46,5 @@ rule all:
         rules.figure3_all.input,
         rules.figure4_all.input,
         rules.figure5_all.input
+
+ruleorder: figure1_pca > figure2_pca

@@ -8,7 +8,7 @@ rule all:
         expand("data/{dataset}", dataset=DATASETS),
 
 
-rule download_bugeon:
+rule bugeon:
     output:
         directory("data/bugeon"),
     shell:
@@ -18,7 +18,7 @@ rule download_bugeon:
         rm 38046633
         """
 
-rule download_hodge:
+rule hodge:
     output:
         directory("data/hodge")
     shell:
@@ -29,8 +29,7 @@ rule download_hodge:
         rm -r {output}/694413985
         """
 
-# TODO: one rm line. Fix.
-rule download_tasic:
+rule tasic:
     output:
         directory("data/tasic"),
     shell:
@@ -43,7 +42,7 @@ rule download_tasic:
         """
 
 
-rule download_bakken:
+rule bakken:
     output:
         directory("data/bakken"),
     shell:
@@ -53,7 +52,7 @@ rule download_bakken:
         """
 
 
-rule download_colquitt:
+rule colquitt:
     output:
         directory("data/colquitt"),
     shell:
@@ -63,7 +62,7 @@ rule download_colquitt:
         """
 
 
-rule download_tosches:
+rule tosches:
     output:
         directory("data/tosches"),
     shell:
@@ -73,9 +72,9 @@ rule download_tosches:
         """
 
 
-rule download_yao:
+rule yao:
     output:
-        directory("data/yao") # TODO: actual files
+        directory("data/yao")
     shell:
         """
         echo "Download dataset 6/6: Yao et al. (mouse Ctx & Hpc)"

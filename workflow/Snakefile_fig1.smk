@@ -1,7 +1,7 @@
 SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
-DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt"]  # , "yao", , ,
 TRANSFORMS = ["log", "raw"]
-#TODO: bugeon_log -> bugeon in pca rule
+NSUBSETS = 100
+
 
 rule all:
     input:
@@ -9,13 +9,10 @@ rule all:
         "figures/figure1/state_modulation.png",
         "figures/figure1/example_trial.png",
         "data/anndata/bugeon.h5ad",
+        "results/pandas/activity.h5ad",
         expand("results/anndata/bugeon_{transform}.h5ad", transform=TRANSFORMS),
-        expand(
-            "figures/figure1/regression_{subclass}.png",
-            subclass=SUBCLASSES,
-            transform=["log"],
-        ),
-        expand("/figures/figure1/receptors_{transform}.png", transform=TRANSFORMS),
+        expand("figures/figure1/receptors_{transform}.png", transform=TRANSFORMS),
+        "figures/figure1/regression_All.png",
 
 
 rule state_modulation:
@@ -32,7 +29,8 @@ rule state_modulation:
 
 rule example_trial:
     input:
-        "data/bugeon/SB026/2019-10-16/",
+        home_dir="data/bugeon/",
+        experiment_dir="data/bugeon/SB026/2019-10-16/",
     params:
         experiment="SB026/2019-10-16/",
         stimulus="Blank",
@@ -59,11 +57,19 @@ rule pca:
         "fig1_pca.py"
 
 
-# TODO: fix problem that we now only have bugeon_log
+rule receptors:
+    input:
+        by_subtype="results/pandas/bugeon_by_subtype_{transform}.csv",
+        tasic="data/anndata/tasic.h5ad",
+    output:
+        figure="figures/figure1/receptors_{transform}.png",
+    params:
+        transform=lambda wildcards: wildcards.transform,
+    script:
+        "fig1_receptors.py"
 
 
 rule regression:
-    # TODO: fix num_subsets hard coding
     input:
         "results/anndata/bugeon_log.h5ad",
     output:
@@ -76,22 +82,9 @@ rule regression:
         "figures/figure1/ncell_corr.png",
         "figures/figure1/corr_subsample.png",
     params:
-        n_subsets=100,  #TODO mbda wildcards : wildcards.n_subsets
+        n_subsets=NSUBSETS,
     script:
         "fig1_regression.py"
-
-
-rule receptors:
-    # TODO: tasic
-    input:
-        by_subtype="results/pandas/bugeon_by_subtype_{transform}.csv",
-        tasic="results/anndata/tasic.h5ad",
-    output:
-        figure="/figures/figure1/receptors_{transform}.png",
-    params:
-        transform=lambda wildcards: wildcards.transform,
-    script:
-        "fig1_receptors.py"
 
 
 # TODO: add receptors_supp
