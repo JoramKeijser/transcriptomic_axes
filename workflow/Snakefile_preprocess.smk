@@ -1,16 +1,20 @@
 # Raw data to anndata
 import numpy as np
+
 DATASETS = ["bakken", "bugeon", "colquitt", "hodge", "tasic", "tosches"]
 NUM_JOBS = 100
-NUM_CELLS = int(1169213/2) #1169213
+NUM_CELLS = int(1169213 / 2)  # 1169213
 ROWS_PER_JOB = int(NUM_CELLS / NUM_JOBS)
 START_ROWS = np.arange(0, NUM_CELLS, ROWS_PER_JOB)
+MEM = 6000
+LARGEMEM = 120000
+
 
 rule num_rows:
     input:
-        metadata = "data/yao/metadata.csv"
+        metadata="data/yao/metadata.csv",
     output:
-        "results/pandas/num_jobs.txt"
+        "results/pandas/num_jobs.txt",
     shell:
         """
         num_cells=$(wc -l < {input})
@@ -22,31 +26,36 @@ rule num_rows:
 
 rule all:
     input:
-        expand("data/anndata/dataset", datasets=DATASETS)
+        expand("data/anndata/dataset", datasets=DATASETS),
 
-rule pp_yao: # Merge partitions. Could use rows per job here
+
+rule pp_yao:  # Merge partitions. Could use rows per job here
     input:
-        shared_genes = "results/gene_lists/shared_genes.txt", # TODO: from other file
-        bugeon_genes = "data/bugeon/genes.names.txt",
-        files = expand("data/scratch/yao_{start}_{num}.h5ad",
-            start=START_ROWS, num = ROWS_PER_JOB)
-        # shared genes?
+        shared_genes="results/gene_lists/shared_genes.txt",  # TODO: from other file
+        bugeon_genes="data/bugeon/genes.names.txt",
+        files=expand(
+            "data/scratch/yao_{start}_{num}.h5ad", start=START_ROWS, num=ROWS_PER_JOB
+        ),
+    resources:
+        mem_mb=LARGEMEM,
     output:
-        anndata = "data/anndata/yao.h5ad"
+        anndata="data/anndata/yao.h5ad",
     script:
         "preprocess_yao_combine.py"
 
+
 rule partition:
     input:
-        metadata = "data/yao/metadata.csv",
-        counts = "data/yao/expression_matrix.hdf5"
+        metadata="data/yao/metadata.csv",
+        counts="data/yao/expression_matrix.hdf5",
     output:
-        anndata = "data/scratch/yao_{start_row}_{num_rows}.h5ad"
+        anndata="data/scratch/yao_{start_row}_{num_rows}.h5ad",
     params:
-        start_row = lambda wildcards : int(wildcards.start_row),
-        num_rows = lambda wildcards : int(wildcards.num_rows)
+        start_row=lambda wildcards: int(wildcards.start_row),
+        num_rows=lambda wildcards: int(wildcards.num_rows),
     script:
-         "preprocess_yao_partition.py"
+        "preprocess_yao_partition.py"
+
 
 rule pp_bugeon:
     input:
@@ -59,15 +68,18 @@ rule pp_bugeon:
 
 rule pp_hodge:
     input:
-        genes = "data/hodge/human_MTG_2018-06-14_genes-rows.csv",
-        exons = "data/hodge/human_MTG_2018-06-14_exon-matrix.csv",
-        introns = "data/hodge/human_MTG_2018-06-14_intron-matrix.csv",
-        cells = "data/hodge/human_MTG_2018-06-14_samples-columns.csv",
-        shared_genes = "results/pandas/shared_genes.txt", # TODO: from other file
+        genes="data/hodge/human_MTG_2018-06-14_genes-rows.csv",
+        exons="data/hodge/human_MTG_2018-06-14_exon-matrix.csv",
+        introns="data/hodge/human_MTG_2018-06-14_intron-matrix.csv",
+        cells="data/hodge/human_MTG_2018-06-14_samples-columns.csv",
+        shared_genes="results/pandas/shared_genes.txt",  # TODO: from other file
+    resources:
+        mem_mb=MEM,
     output:
         anndata="data/anndata/hodge.h5ad",
     script:
         "preprocess_hodge.py"
+
 
 rule pp_tasic:
     input:
@@ -75,6 +87,8 @@ rule pp_tasic:
         introns="data/tasic/mouse_VISp_2018-06-14_intron-matrix.csv",
         genes="data/tasic/mouse_VISp_2018-06-14_genes-rows.csv",
         cells="data/tasic/mouse_VISp_2018-06-14_samples-columns.csv",
+    resources:
+        mem_mb=MEM,
     output:
         anndata="data/anndata/tasic.h5ad",
         hv_genes="results/gene_lists/tasic_hvgs.txt",
@@ -92,7 +106,7 @@ rule extract_tosches:
         "extract_tosches.R"
 
 
-rule pp_tosches:  #TODO: combine with extract
+rule pp_tosches:
     input:
         counts="data/tosches/counts.csv",
         metadata="data/tosches/metadata.csv",
@@ -117,5 +131,7 @@ rule pp_bakken:
         metadata="data/bakken/metadata.csv",
     output:
         anndata="data/anndata/bakken.h5ad",
+    resources:
+        mem_mb=MEM,
     script:
         "preprocess_bakken.py"
