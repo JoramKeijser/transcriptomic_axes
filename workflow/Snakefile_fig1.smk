@@ -1,6 +1,7 @@
 SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
 TRANSFORMS = ["log", "raw"]
 NSUBSETS = 100
+NPERMUTATIONS = 100
 
 
 rule all:
@@ -10,56 +11,52 @@ rule all:
         "figures/figure1/example_trial.png",
         "data/anndata/bugeon.h5ad",
         "results/pandas/activity.h5ad",
-        expand(
-            "results/anndata/bugeon_{transform}.h5ad",
-            transform = TRANSFORMS
-        ),
-        expand(
-            "figures/figure1/receptors_{transform}.png",
-            transform = TRANSFORMS
-        ),
+        expand("results/anndata/bugeon_{transform}.h5ad", transform=TRANSFORMS),
+        expand("figures/figure1/receptors_{transform}.png", transform=TRANSFORMS),
         "figures/figure1/regression_All.png",
+        "figures/figure1/tracksplot_tasic.png",
+
 
 rule state_modulation:
     input:
-        data_dir = "data/bugeon/",
+        data_dir="data/bugeon/",
     params:
-        stimulus = "Blank",
+        stimulus="Blank",
     output:
-        data = "results/pandas/activity.h5ad",
-        figure = "figures/figure1/state_modulation.png",
+        data="results/pandas/activity.h5ad",
+        figure="figures/figure1/state_modulation.png",
     script:
         "fig1_state_modulation.py"
 
 
 rule example_trial:
     input:
-        home_dir = "data/bugeon/",
-        experiment_dir = "data/bugeon/SB026/2019-10-16/",
+        home_dir="data/bugeon/",
+        experiment_dir="data/bugeon/SB026/2019-10-16/",
     params:
-        experiment = "SB026/2019-10-16/",
-        stimulus = "Blank",
+        experiment="SB026/2019-10-16/",
+        stimulus="Blank",
     output:
-        figure = "figures/figure1/example_trial.png",
+        figure="figures/figure1/example_trial.png",
     script:
         "fig1_example_trial.py"
 
 
 rule pca:
     input:
-        figdir = "figures/figure1/",
-        transcriptomics = "data/anndata/bugeon.h5ad",
-        activity = "results/pandas/activity.h5ad",
+        transcriptomics="data/anndata/bugeon.h5ad",
+        activity="results/pandas/activity.h5ad",
     params:
         transform=lambda wildcards: wildcards.transform,
     output:
-        annotated = "results/anndata/bugeon_{transform}.h5ad",
-        by_subtype = "results/pandas/bugeon_by_subtype_{transform}.csv",
-        pca_subclass = "figures/figure1/pca_subclass_{transform}.png",
-        pca_modulation = "figures/figure1/pca_modulation_{transform}.png",
-        regression = "figures/figure1/predict_mod_{transform}.png",
+        annotated="results/anndata/bugeon_{transform}.h5ad",
+        by_subtype="results/pandas/bugeon_by_subtype_{transform}.csv",
+        pca_subclass="figures/figure1/pca_subclass_{transform}.png",
+        pca_modulation="figures/figure1/pca_modulation_{transform}.png",
+        regression="figures/figure1/predict_mod_{transform}.png",
     script:
         "fig1_pca.py"
+
 
 rule receptors:
     input:
@@ -71,6 +68,24 @@ rule receptors:
         transform=lambda wildcards: wildcards.transform,
     script:
         "fig1_receptors.py"
+
+
+# TODO: add receptors_supp
+rule all_receptors:
+    input:
+        by_subtype="results/pandas/bugeon_by_subtype_log.csv",
+        tasic="data/anndata/tasic.h5ad",
+    params:
+        n_permutations=NPERMUTATIONS,
+        figdir="figures/figure1/",
+    output:
+        tracksplot="figures/figure1/tracksplot_tasic.png",
+        tracksplot_significant="figures/figure1/tracksplot_tasic_significant_first.png",
+        hist_sig="figures/figure1/receptors_examples_significant.png",
+        hist_notsig="figures/figure1/receptors_examples_not_significant.png",
+    script:
+        "fig1_receptors_supp.py"
+
 
 rule regression:
     input:
@@ -85,9 +100,6 @@ rule regression:
         "figures/figure1/ncell_corr.png",
         "figures/figure1/corr_subsample.png",
     params:
-        n_subsets = NSUBSETS
+        n_subsets=NSUBSETS,
     script:
         "fig1_regression.py"
-
-
-# TODO: add receptors_supp
