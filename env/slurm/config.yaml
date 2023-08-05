@@ -1,0 +1,17 @@
+jobs: 100
+rerun-incomplete: True
+keep-going: True
+cluster: >-
+    sbatch
+    --ntasks 1
+    --cpus-per-task {resources.threads}
+    --mem {resources.mem_mb}
+    --time {resources.time}
+    -o log/jobs/{rule}_{wildcards}_%j.out
+    -e log/jobs/{rule}_{wildcards}_%j.err
+    -p "standard"
+default-resources:
+    - threads=1
+    - mem_mb=3850
+    - time="4:00:00"
+

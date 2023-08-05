@@ -1,5 +1,6 @@
 onstart:
-    print("### Complete workflow ###")
+    print("### Complete workflow ###") 
+    shell("mkdir -p log/jobs")
 
 module download:
     snakefile:

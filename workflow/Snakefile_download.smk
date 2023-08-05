@@ -23,10 +23,10 @@ rule hodge:
         directory("data/hodge")
     shell:
         """
-        wget -P {output} https://celltypes.brain-map.org/api/v2/well_known_file_download/694416044
-        7z x {output}/694416044
+        wget --no-check-certificate -P {output} https://celltypes.brain-map.org/api/v2/well_known_file_download/694416044
+        unzip {output}/694416044
         mv human*.{{txt,csv}} {output}
-        rm -r {output}/694413985
+	rm -r {output}/694416044
         """
 
 rule tasic:
@@ -34,9 +34,8 @@ rule tasic:
         directory("data/tasic"),
     shell:
         """
-        mkdir {output}
-        wget -P {output} https://celltypes.brain-map.org/api/v2/well_known_file_download/694413985
-        7z x {output}/694413985
+        wget --no-check-certificate -P {output} https://celltypes.brain-map.org/api/v2/well_known_file_download/694413985
+        unzip {output}/694413985
         mv mouse*.{{txt,csv}} {output}
         rm -r {output}/694413985
         """
