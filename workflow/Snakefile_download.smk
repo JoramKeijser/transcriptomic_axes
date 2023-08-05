@@ -1,6 +1,6 @@
 SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
-DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt",
-            "yao", "hodge"]  # , "yao", , ,
+DATASETS = ["bugeon", "bakken", "tosches", "tasic",
+            "colquitt", "yao", "hodge"]
 
 
 rule all:

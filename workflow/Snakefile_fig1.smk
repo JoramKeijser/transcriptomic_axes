@@ -1,7 +1,7 @@
 SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
 TRANSFORMS = ["log", "raw"]
-NSUBSETS = 100
-NPERMUTATIONS = 100
+NSUBSETS = 1000
+NPERMUTATIONS = 1000
 
 
 rule all:

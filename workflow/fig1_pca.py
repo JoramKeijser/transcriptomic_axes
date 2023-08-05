@@ -60,7 +60,7 @@ for pc in range(NPCS):
 bugeon.write_h5ad(snakemake.output.annotated)
 # Show
 
-fig, ax = plt.subplots(figsize=(4, 3))
+fig, ax = plt.subplots(figsize=(5, 4))
 sns.despine()
 sc.pl.pca(
     bugeon,
@@ -81,7 +81,7 @@ plt.savefig(snakemake.output.pca_subclass)
 
 # Color by state modulation
 
-fig, ax = plt.subplots(figsize=(4, 3))
+fig, ax = plt.subplots(figsize=(5, 4))
 sns.despine()
 sc.pl.pca(
     bugeon,

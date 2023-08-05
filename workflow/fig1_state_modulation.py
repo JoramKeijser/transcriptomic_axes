@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import anndata as ad
+from scipy.stats import mannwhitneyu
 from src import data_tools
 
 sns.set_palette("colorblind")
@@ -69,5 +70,21 @@ print(f"{MODULATION}: n = {var_df[~var_df[MODULATION].isna()].shape[0]} interneu
 print(var_df[~var_df[MODULATION].isna()].value_counts("Subclass"))
 print(var_df.columns)
 print(var_df[[MODULATION, "Subclass"]].groupby("Subclass").mean())
+# Add significance
+# Add pairwise significance
+var_df.dropna(inplace=True, subset="State modulation")
+y, h = 1.1, .05
+for i, subclass in enumerate(var_df['Subclass'].cat.categories):
+    mod1 = np.array(var_df[var_df['Subclass'] == subclass][MODULATION]).flatten()
+    for j, subclass2 in enumerate(var_df['Subclass'].cat.categories):
+        mod2 = np.array(var_df[var_df['Subclass'] == subclass2][MODULATION]).flatten()
+        if j > i:
+            pval = mannwhitneyu(mod1, mod2).pvalue
+            if j == i + 1:
+                # Add it
+                if pval < 0.05:
+                    plt.plot([i, i, j, j], [y, y+h, y+h, y], lw=.8, color='black')
+                    plt.text((i+j)*.5, y+h, "*",
+                             ha='center', va='bottom', color='black', fontsize=FONTSIZE)
 plt.tight_layout()
 plt.savefig(snakemake.output.figure, dpi=300)
