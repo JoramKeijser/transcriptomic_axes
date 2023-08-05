@@ -10,38 +10,49 @@ MEM = 6000
 LARGEMEM = 120000
 
 
-rule num_rows:
-    input:
-        metadata="data/yao/metadata.csv",
-    output:
-        "results/pandas/num_jobs.txt",
-    shell:
-        """
-        num_cells=$(wc -l < {input})
-        num_jobs=100
-        rows_per_job=$((num_cells/{{NUM_JOBS}}+1)) # >1/100th of the 1.16 m cells
-        echo $rows_per_job > {output}
-        """
+#rule num_rows:
+#    input:
+#        metadata="data/yao/metadata.csv",
+#    output:
+#        "results/pandas/num_jobs.txt",
+#    shell:
+#        """
+#        num_cells=$(wc -l < {input})
+#        num_jobs=100
+#        rows_per_job=$((num_cells/{{NUM_JOBS}}+1)) # >1/100th of the 1.16 m cells
+#        echo $rows_per_job > {output}
+#        """
 
 
 rule all:
     input:
-        expand("data/anndata/dataset", datasets=DATASETS),
+        expand("data/anndata/{dataset}.h5ad",
+ 	dataset=DATASETS),
 
 
-rule pp_yao:  # Merge partitions. Could use rows per job here
-    input:
-        shared_genes="results/gene_lists/shared_genes.txt",  # TODO: from other file
-        bugeon_genes="data/bugeon/genes.names.txt",
-        files=expand(
-            "data/scratch/yao_{start}_{num}.h5ad", start=START_ROWS, num=ROWS_PER_JOB
-        ),
-    resources:
-        mem_mb=LARGEMEM,
-    output:
-        anndata="data/anndata/yao.h5ad",
-    script:
-        "preprocess_yao_combine.py"
+#rule intersect_genes:
+#    input:
+#        expand("results/pandas/genes_{dataset}.csv",
+#        dataset=DATASETS),
+#    output:
+#        shared_genes="results/gene_lists/shared_genes.txt",
+#    script:
+#        "fig2_intersect_genes.py"
+
+
+#rule pp_yao:  # Merge partitions. Could use rows per job here
+#    input:
+#        shared_genes="results/gene_lists/shared_genes.txt",  # TODO: from other file
+#        bugeon_genes="data/bugeon/genes.names.txt",
+#        files=expand(
+#            "data/scratch/yao_{start}_{num}.h5ad", start=START_ROWS, num=ROWS_PER_JOB
+#        ),
+#    resources:
+#        mem_mb=LARGEMEM,
+#    output:
+#        anndata="data/anndata/yao.h5ad",
+#    script:
+#        "preprocess_yao_combine.py"
 
 
 rule partition:
@@ -71,8 +82,7 @@ rule pp_hodge:
         genes="data/hodge/human_MTG_2018-06-14_genes-rows.csv",
         exons="data/hodge/human_MTG_2018-06-14_exon-matrix.csv",
         introns="data/hodge/human_MTG_2018-06-14_intron-matrix.csv",
-        cells="data/hodge/human_MTG_2018-06-14_samples-columns.csv",
-        shared_genes="results/pandas/shared_genes.txt",  # TODO: from other file
+        cells="data/hodge/human_MTG_2018-06-14_samples-columns.csv",  
     resources:
         mem_mb=MEM,
     output:
