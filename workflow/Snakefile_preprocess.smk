@@ -6,7 +6,8 @@ NUM_JOBS = 100
 NUM_CELLS = int(1169213 / 2)  # 1169213
 ROWS_PER_JOB = int(NUM_CELLS / NUM_JOBS)
 START_ROWS = np.arange(0, NUM_CELLS, ROWS_PER_JOB)
-MEM = 6000
+SMALLMEM = 4000
+MEM = 60000
 LARGEMEM = 120000
 
 
@@ -73,6 +74,8 @@ rule pp_bugeon:
         data_dir="data/bugeon/",
     output:
         anndata="data/anndata/bugeon.h5ad",
+    resources:
+        mem_mb=SMALLMEM,
     script:
         "preprocess_bugeon.py"
 
@@ -112,6 +115,8 @@ rule extract_tosches:
     output:
         counts="data/tosches/counts.csv",
         metadata="data/tosches/metadata.csv",
+    resources:
+        mem_mb=SMALLMEM,
     script:
         "extract_tosches.R"
 
@@ -122,6 +127,8 @@ rule pp_tosches:
         metadata="data/tosches/metadata.csv",
     output:
         anndata="data/anndata/tosches.h5ad",
+    resources:
+        mem_mb=SMALLMEM,
     script:
         "preprocess_tosches.py"
 
@@ -131,6 +138,8 @@ rule pp_colquitt:
         data="data/colquitt/HVC_RA_RNA_counts.csv",
     output:
         anndata="data/anndata/colquitt.h5ad",
+    resources:
+        mem_mb=MEM,
     script:
         "preprocess_colquitt.py"
 

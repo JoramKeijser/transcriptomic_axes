@@ -7,34 +7,32 @@ from src import data_tools
 from src import constants, pca_tools
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 sns.set_palette("colorblind")
 sns.set_context("poster")
-sc.settings.figdir= "./figures/figure4/"
+sc.settings.figdir = "./figures/figure4/"
 sc.settings.dpi_save = 300
+
 
 def main():
     metadata = pd.read_csv(snakemake.input.cells, index_col=0)
-    counts = pd.read_csv(snakemake.input.exons,
-                       index_col=0, header=0, dtype=int)
-    # TODO: also count introns
-    counts += pd.read_csv(snakemake.input.introns,
-                      index_col=0, header=0, dtype=int)
+    counts = pd.read_csv(snakemake.input.exons, index_col=0, header=0, dtype=int)
+    counts += pd.read_csv(snakemake.input.introns, index_col=0, header=0, dtype=int)
     print(metadata.shape, counts.shape)
     genes = pd.read_csv(snakemake.input.genes)
-    genes = [gene[0] + gene[1:].lower() for gene in genes['gene']]
+    genes = [gene[0] + gene[1:].lower() for gene in genes["gene"]]
     # Put into AnnData, subset GABAergic
-    adata = ad.AnnData(X = np.array(counts).T, obs=metadata)
+    adata = ad.AnnData(X=np.array(counts).T, obs=metadata)
     adata.var_names = genes
-    depth = np.median(adata.X.sum(1)) # reads / cell
-    num_genes = np.median((adata.X>0).sum(1)) # genes / cell
+    depth = np.median(adata.X.sum(1))  # reads / cell
+    num_genes = np.median((adata.X > 0).sum(1))  # genes / cell
     print(f"# counts: {depth}, # genes: {num_genes}")
 
-    adata = adata[adata.obs['class'] == "GABAergic"]
-    #adata = data_tools.organize_subclass_labels(adata)
-    adata.write_h5ad(snakemake.output.anndata)    # TODO: also count introns
+    adata = adata[adata.obs["class"] == "GABAergic"]
+    # adata = data_tools.organize_subclass_labels(adata)
+    adata.write_h5ad(snakemake.output.anndata)  # TODO: also count introns
 
-
-    #TODO: add hodge to table overview and to pca (fig4)
+    # TODO: add hodge to table overview and to pca (fig4)
     """
     print("Saving data as", savedir + "hodge.h5ad")
     adata.write_h5ad(savedir + "hodge.h5ad")
@@ -71,5 +69,6 @@ def main():
     print("Saving PCA'd data as", pca_savedir + "hodge.h5ad")
     """
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()
