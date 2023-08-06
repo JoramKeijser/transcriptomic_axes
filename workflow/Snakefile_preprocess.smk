@@ -151,6 +151,6 @@ rule pp_bakken:
     output:
         anndata="data/anndata/bakken.h5ad",
     resources:
-        mem_mb=MEM,
+        mem_mb=LARGEMEM,
     script:
         "preprocess_bakken.py"
