@@ -1,4 +1,4 @@
-# Figure 2: PCA
+# Figu 2: PCA
 DATASETS = ["bakken", "tosches", "tasic", "colquitt"]
 REFERENCE = 'tasic'
 OTHERS = ["bakken", "tosches", "colquitt"]
