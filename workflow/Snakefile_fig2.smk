@@ -1,4 +1,4 @@
-# Figure 2: PCA
+# Figu 2: PCA
 DATASETS = ["bakken", "tosches", "tasic", "colquitt"]
 REFERENCE = 'tasic'
 OTHERS = ["bakken", "tosches", "colquitt"]
@@ -111,7 +111,7 @@ rule pca:
 
 rule intersect_genes:
     input:
-        expand("results/pandas/genes_{dataset}.csv",
+        expand("results/gene_lists/genes_{dataset}.csv",
         dataset=DATASETS),
     output:
         shared_genes="results/gene_lists/shared_genes.txt",
