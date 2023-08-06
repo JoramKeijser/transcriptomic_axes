@@ -3,12 +3,12 @@ import numpy as np
 
 DATASETS = ["bakken", "bugeon", "colquitt", "hodge", "tasic", "tosches", "yao"]
 NUM_JOBS = 100
-NUM_CELLS = int(1169213 / 2)  # 1169213
+NUM_CELLS = 1169213 #int(1169213 / 2)  # 1169213
 ROWS_PER_JOB = int(NUM_CELLS / NUM_JOBS)
 START_ROWS = np.arange(0, NUM_CELLS, ROWS_PER_JOB)
 SMALLMEM = 4000
 MEM = 60000
-LARGEMEM = 120000
+LARGEMEM = 240000
 
 
 #rule num_rows:
@@ -62,6 +62,8 @@ rule partition:
         bugeon_genes="data/bugeon/genes.names.txt",
     output:
         anndata="data/scratch/yao_{start_row}_{num_rows}.h5ad",
+    resources:
+        mem_mb=8000,  
     params:
         start_row=lambda wildcards: int(wildcards.start_row),
         num_rows=lambda wildcards: int(wildcards.num_rows),
