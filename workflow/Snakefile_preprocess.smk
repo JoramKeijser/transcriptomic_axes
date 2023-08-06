@@ -1,7 +1,7 @@
 # Raw data to anndata
 import numpy as np
 
-DATASETS = ["bakken", "bugeon", "colquitt", "hodge", "tasic", "tosches"]
+DATASETS = ["bakken", "bugeon", "colquitt", "hodge", "tasic", "tosches", "yao"]
 NUM_JOBS = 100
 NUM_CELLS = int(1169213 / 2)  # 1169213
 ROWS_PER_JOB = int(NUM_CELLS / NUM_JOBS)
