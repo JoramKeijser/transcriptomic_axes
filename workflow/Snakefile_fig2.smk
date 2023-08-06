@@ -6,8 +6,8 @@ OTHERS = ["bakken", "tosches", "colquitt"]
 species = {'colquitt': "Zebra finch", "tosches": "Turtle",
             "tasic": "Mouse", "bugeon": "Mouse L1-3",
             "bakken": "Human", "yao": "mouse", "hodge": "Human MTG"}
-CONTROLS = ['complete', 'meis2', 'abundance', 'depth',
-    "integrated_rpca", "integrated_cca"]
+CONTROLS = ['complete', 'meis2', 'abundance', 'depth']
+    #"integrated_rpca", "integrated_cca"]
 DESCRIPTION = {"complete": "", "meis2": "No Meis2",
     "integrated_rpca": "Integrated rPCA",
     "integrated_cca": "Integrated CCA",
@@ -111,7 +111,7 @@ rule pca:
 
 rule intersect_genes:
     input:
-        expand("results/pandas/genes_{dataset}.csv",
+        expand("results/gene_lists/genes_{dataset}.csv",
         dataset=DATASETS),
     output:
         shared_genes="results/gene_lists/shared_genes.txt",
