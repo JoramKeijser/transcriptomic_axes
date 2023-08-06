@@ -12,6 +12,6 @@ cluster: >-
     --partition "standard"
 default-resources:
     - threads=1
-    - mem_mb=3850
+    - mem_mb=4000
     - time="4:00:00"
 

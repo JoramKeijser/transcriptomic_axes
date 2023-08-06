@@ -66,6 +66,8 @@ rule receptors:
         figure="figures/figure1/receptors_{transform}.png",
     params:
         transform=lambda wildcards: wildcards.transform,
+    resources:
+        mem_mb=8000,
     script:
         "fig1_receptors.py"
 
@@ -78,6 +80,8 @@ rule all_receptors:
     params:
         n_permutations=NPERMUTATIONS,
         figdir="figures/figure1/",
+    resources:
+        mem_mb=8000,
     output:
         tracksplot="figures/figure1/tracksplot_tasic.png",
         tracksplot_significant="figures/figure1/tracksplot_tasic_significant_first.png",
