@@ -5,7 +5,7 @@ DATASETS = ["tasic", "yao", "bugeon"]
 species = {"tasic": "VISp L1-6", "bugeon": "VISp L1-3", "yao": "Ctx & Hpc"}
 CONTROLS = ["complete", "72g"]
 # TODO: bugeon_log -> bugeon
-
+MEM = 20000
 
 def genelist_from_label(wildcards):
     lists = {
@@ -41,8 +41,8 @@ rule all:
         control = CONTROLS),
         expand("figures/figure3/principal_angles_{control}.png",
         control = CONTROLS),
-        expand("figures/figure3/pca_{dataset}_{control}.png",
-            dataset=DATASETS, control=CONTROLS)
+        #expand("figures/figure3/pca_{dataset}_{control}.png",
+        #    dataset=DATASETS, control=CONTROLS)
 
 rule cross_variance:
     input:
@@ -50,6 +50,8 @@ rule cross_variance:
     params:
         areas=areas_from_condition,
         reference="tasic",
+    resources:
+        mem_mb=MEM*4,
     output:
         figure="figures/figure3/cross_variance_{control}.png",
         data="results/pc_comparison/cross_variance_mouse_{control}.pickle",
@@ -63,6 +65,9 @@ rule principal_angles:
         datasets_from_condition,
     params:
         areas=areas_from_condition,
+        reference = "tasic",
+    resources:
+        mem_mb=MEM,
     output:
         figure="figures/figure3/principal_angles_{control}.png",
         angles="results/pc_comparison/principal_angles_mouse_{control}.pickle",
@@ -81,6 +86,8 @@ rule pca:
     output:
         figure="figures/figure3/pca_{dataset}_{control}.png",
         anndata="results/anndata/{dataset}_{control}.h5ad",
+    resources:
+        mem_mb=MEM*4,
     script:
         "fig2_pca.py"
 
