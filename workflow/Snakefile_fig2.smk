@@ -13,6 +13,7 @@ DESCRIPTION = {"complete": "", "meis2": "No Meis2",
     "integrated_cca": "Integrated CCA",
     "abundance": "Matched Abundance", "depth": "Matched Depth"}
 # TODO: flag to avoid naming "complete"
+MEM = 20000
 
 rule all:
     input:
@@ -62,6 +63,8 @@ rule comparison:
         cv_control = 'results/pc_comparison/cross_variance_{control}.pickle'
     params:
         control = lambda wildcards : DESCRIPTION[wildcards.control]
+    resources:
+        mem_mb=MEM,
     output:
         angles = "figures/figure2/compare_angles_{control}.png",
         cv = "figures/figure2/compare_variance_{control}.png"
@@ -77,6 +80,8 @@ rule principal_angles:
     params:
         areas = species,
         reference = "tasic"
+    resources:
+        mem_mb=MEM,
     output:
         figure= "figures/figure2/principal_angles_{control}.png",
         angles = 'results/pc_comparison/principal_angles_{control}.pickle'
@@ -90,6 +95,8 @@ rule cross_variance:
     params:
         areas = species,
         reference = "tasic"
+    resources:
+        mem_mb=MEM,
     output:
         figure= "figures/figure2/cross_variance_{control}.png",
         data = 'results/pc_comparison/cross_variance_{control}.pickle'
@@ -103,6 +110,8 @@ rule pca:
     params:
         species = lambda wildcards : species[wildcards.dataset],
         control = lambda wildcards : wildcards.control
+    resources:
+        mem_mb=MEM,
     output:
         figure = "figures/figure2/pca_{dataset}_{control}.png",
         anndata = "results/anndata/{dataset}_{control}.h5ad",
