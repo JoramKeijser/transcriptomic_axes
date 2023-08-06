@@ -42,7 +42,16 @@ cell_info = cell_info.loc[shared_ids]
 
 # Create adata with current sub
 adata = ad.AnnData(X=counts, dtype=int, obs=cell_info)
-# To do: order
+# Subset genes
+shared_genes = np.loadtxt(snakemake.input.shared_genes, dtype=str)
+bugeon_genes = np.loadtxt(snakemake.input.bugeon_genes, dtype=str)
+shared_genes = set(shared_genes).union(bugeon_genes)
+shared_genes = list(set(shared_genes).intersection(adata.var_names))
+shared_genes = np.sort(np.array(shared_genes, dtype=str))
+print("shared_genes", len(shared_genes))
+adata = adata[:, shared_genes]
+
+# Subclass
 subclass_order = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg", "Meis2"]
 adata.obs["Subclass"] = adata.obs["Subclass"].astype("category")
 

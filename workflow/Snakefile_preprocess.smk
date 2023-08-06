@@ -41,25 +41,25 @@ rule all:
 #        "fig2_intersect_genes.py"
 
 
-#rule pp_yao:  # Merge partitions. Could use rows per job here
-#    input:
-#        shared_genes="results/gene_lists/shared_genes.txt",  # TODO: from other file
-#        bugeon_genes="data/bugeon/genes.names.txt",
-#        files=expand(
-#            "data/scratch/yao_{start}_{num}.h5ad", start=START_ROWS, num=ROWS_PER_JOB
-#        ),
-#    resources:
-#        mem_mb=LARGEMEM,
-#    output:
-#        anndata="data/anndata/yao.h5ad",
-#    script:
-#        "preprocess_yao_combine.py"
+rule pp_yao:  # Merge partitions. Could use rows per job here
+   input:
+       files=expand(
+           "data/scratch/yao_{start}_{num}.h5ad", start=START_ROWS, num=ROWS_PER_JOB
+       ),
+   resources:
+       mem_mb=LARGEMEM,
+   output:
+       anndata="data/anndata/yao.h5ad",
+   script:
+       "preprocess_yao_combine.py"
 
 
 rule partition:
     input:
         metadata="data/yao/metadata.csv",
         counts="data/yao/expression_matrix.hdf5",
+        shared_genes="results/gene_lists/shared_genes.txt",
+        bugeon_genes="data/bugeon/genes.names.txt",
     output:
         anndata="data/scratch/yao_{start_row}_{num_rows}.h5ad",
     params:
@@ -85,7 +85,7 @@ rule pp_hodge:
         genes="data/hodge/human_MTG_2018-06-14_genes-rows.csv",
         exons="data/hodge/human_MTG_2018-06-14_exon-matrix.csv",
         introns="data/hodge/human_MTG_2018-06-14_intron-matrix.csv",
-        cells="data/hodge/human_MTG_2018-06-14_samples-columns.csv",  
+        cells="data/hodge/human_MTG_2018-06-14_samples-columns.csv",
     resources:
         mem_mb=MEM,
     output:
