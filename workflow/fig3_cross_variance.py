@@ -28,7 +28,7 @@ def main(args):
         name = dataset.split("/")[-1].split("h5ad")[0].split("_")[0]
         print(name)
         datasets[name] = ad.read_h5ad(dataset)
-        datasets[name].X = np.asarray(datasets[name].X.todense())
+        datasets[name].X = np.asarray(datasets[name].X)
 
 
     remaining_datasets = [name for name in list(datasets.keys()) if name != reference]
