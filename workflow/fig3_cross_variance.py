@@ -27,17 +27,7 @@ def main(args):
     for dataset in snakemake.input:
         name = dataset.split("/")[-1].split("h5ad")[0].split("_")[0]
         print(name)
-<<<<<<< HEAD
-<<<<<<< HEAD
         datasets[name] = ad.read_h5ad(dataset)
-=======
-        datasets[name] = tad.read_h5ad(dataset)
->>>>>>> 8901b474ad1ff109ca91bbcf293cebfcda5f7999
-=======
-        datasets[name] = ad.read_h5ad(dataset)
->>>>>>> f185b1d1877b738317e018726a0079e84e24aef0
-        datasets[name].X = np.asarray(datasets[name].X)
-
 
     remaining_datasets = [name for name in list(datasets.keys()) if name != reference]
     print(remaining_datasets)
