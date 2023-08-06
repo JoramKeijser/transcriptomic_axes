@@ -85,6 +85,20 @@ rule pca:
         "fig2_pca.py"
 
 
+rule datasets:
+    input:
+        anndata="data/anndata/{dataset}.h5ad",
+    output:
+        figure="figures/figure3/QC_{dataset}.png",
+        table="results/pandas/overview_{dataset}.csv",
+        genes="results/gene_lists/genes_{dataset}.csv",
+    resources:
+        mem_mb=MEM,
+    params:
+        dataset=lambda wildcards: wildcards.dataset,
+    script:
+        "fig2_dataset_stats.py"
+
 rule intersect_mouse_genes:
     input:
         expand("results/gene_lists/genes_{dataset}.csv", dataset=["tasic", "yao"]),
