@@ -1,9 +1,9 @@
 """
 Mouse datasets
 """
-DATASETS = ["tasic", "yao", "bugeon"]
-species = {"tasic": "VISp L1-6", "bugeon": "VISp L1-3", "yao": "Ctx & Hpc"}
-CONTROLS = ["complete", "72g"]
+areas = {"tasic": "VISp L1-6", "bugeon": "VISp L1-3",
+        "yao": "Ctx & Hpc", "bakken": "Human M1", "hodge": "Human MTG"}
+CONTROLS = ["complete", "72g", "human"]
 # TODO: bugeon_log -> bugeon
 MEM = 20000
 
@@ -13,12 +13,14 @@ def genelist_from_label(wildcards):
         "72g": "data/bugeon/genes.names.txt",
         "bugeonabundance": "results/gene_lists/shared_mouse_genes.txt",
         "bugeonsst": "results/gene_lists/shared_mouse_genes.txt",
+        "human": "results/gene_lists/shared_mouse_genes.txt",
     }
     return lists[wildcards.control]
 
 
 def datasets_from_condition(wildcards):
-    lists = {"complete": ["tasic", "yao"], "72g": ["tasic", "yao", "bugeon"]}
+    lists = {"complete": ["tasic", "yao"], "72g": ["tasic", "yao", "bugeon"],
+    "human": ["bakken", "hodge"] }
     return expand(
         expand(
             "results/anndata/{dataset}_{control}.h5ad",
@@ -32,8 +34,15 @@ def areas_from_condition(wildcards):
     areas = {
         "complete": {"tasic": "VISp L1-6", "yao": "Ctx & Hpc"},
         "72g": {"tasic": "VISp L1-6", "bugeon": "VISp L1-3", "yao": "Ctx & Hpc"},
+        "human": {"bakken": "Human M1", "hodge": "Human MTG"}
     }
     return areas[wildcards.control]
+
+def reference_from_condition(wildcards):
+    if wildcards.control == "human":
+        return "bakken"
+    else:
+        return "tasic"
 
 rule all:
     input:
@@ -41,15 +50,13 @@ rule all:
         control = CONTROLS),
         expand("figures/figure3/principal_angles_{control}.png",
         control = CONTROLS),
-        #expand("figures/figure3/pca_{dataset}_{control}.png",
-        #    dataset=DATASETS, control=CONTROLS)
 
 rule cross_variance:
     input:
         datasets_from_condition,
     params:
         areas=areas_from_condition,
-        reference="tasic",
+        reference=reference_from_condition,
     resources:
         mem_mb=MEM*4,
     output:
@@ -65,7 +72,7 @@ rule principal_angles:
         datasets_from_condition,
     params:
         areas=areas_from_condition,
-        reference = "tasic",
+        reference=reference_from_condition,
     resources:
         mem_mb=MEM,
     output:
@@ -81,7 +88,7 @@ rule pca:
         shared_genes=genelist_from_label,
         bugeon="data/anndata/bugeon.h5ad",
     params:
-        species=lambda wildcards: species[wildcards.dataset],
+        species=lambda wildcards: areas[wildcards.dataset],
         control=lambda wildcards: wildcards.control,
     output:
         figure="figures/figure3/pca_{dataset}_{control}.png",
