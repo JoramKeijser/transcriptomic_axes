@@ -23,7 +23,7 @@ for dataset in snakemake.input:
     PC_subspace[name] = adata.varm['PCs'][:, :constants.NUM_PCS]
 
 print("Plotting principal angles")
-reference = 'tasic'
+reference = snakemake.params.reference
 remaining = np.sort([dataset for dataset in areas.keys() if dataset != reference])
 
 # Add random
@@ -31,17 +31,18 @@ n_genes = PC_subspace[reference].shape[0]
 rng = np.random.RandomState(0)
 idx = rng.permutation(np.arange(n_genes))
 label = 'Chance'
-plt.plot(subspace_angles(PC_subspace[reference][idx], PC_subspace[reference])[::-1] * 180 / np.pi, 
+plt.plot(subspace_angles(PC_subspace[reference][idx], PC_subspace[reference])[::-1] * 180 / np.pi,
             label = label, color='black', linestyle = ":")
-        
-colors = {'yao': sns.color_palette("Set2")[1], 'bugeon': sns.color_palette("Set2")[2]}
+
+colors = {'yao': sns.color_palette("Set2")[1], 'bugeon': sns.color_palette("Set2")[2],
+          'hodge': sns.color_palette("Set2")[1]}
 for i, name in enumerate(remaining):
-    plt.plot(subspace_angles(PC_subspace[name], PC_subspace[reference])[::-1] * 180 / np.pi, 
+    plt.plot(subspace_angles(PC_subspace[name], PC_subspace[reference])[::-1] * 180 / np.pi,
             label = areas[name], color=colors[name])
 
 plt.xlabel("tPC subspace dimension")
 plt.ylabel("Principal angle (deg.)")
-plt.yticks([45, 90])
+plt.yticks([0, 45, 90])
 plt.legend(handlelength=0.5)
 sns.despine()
 plt.tight_layout()
@@ -50,10 +51,9 @@ plt.savefig(snakemake.output.figure, dpi=300)
 print("Saving data")
 angles = {}
 for name in areas.keys():
-    angles[name] = subspace_angles(PC_subspace['tasic'], PC_subspace[name])[::-1] * 180 / np.pi
+    angles[name] = subspace_angles(PC_subspace[reference], PC_subspace[name])[::-1] * 180 / np.pi
 
 savename = snakemake.output.angles
 print("Save as", savename)
 with open(savename, 'wb') as handle:
     pickle.dump(angles, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    
