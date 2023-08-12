@@ -1,11 +1,17 @@
 """
 Mouse datasets
 """
-areas = {"tasic": "VISp L1-6", "bugeon": "VISp L1-3",
-        "yao": "Ctx & Hpc", "bakken": "Human M1", "hodge": "Human MTG"}
+areas = {
+    "tasic": "VISp L1-6",
+    "bugeon": "VISp L1-3",
+    "yao": "Ctx & Hpc",
+    "bakken": "Human M1",
+    "hodge": "Human MTG",
+}
 CONTROLS = ["complete", "72g", "human"]
 # TODO: bugeon_log -> bugeon
 MEM = 20000
+
 
 def genelist_from_label(wildcards):
     lists = {
@@ -19,8 +25,11 @@ def genelist_from_label(wildcards):
 
 
 def datasets_from_condition(wildcards):
-    lists = {"complete": ["tasic", "yao"], "72g": ["tasic", "yao", "bugeon"],
-    "human": ["bakken", "hodge"] }
+    lists = {
+        "complete": ["tasic", "yao"],
+        "72g": ["tasic", "yao", "bugeon"],
+        "human": ["bakken", "hodge"],
+    }
     return expand(
         expand(
             "results/anndata/{dataset}_{control}.h5ad",
@@ -34,9 +43,10 @@ def areas_from_condition(wildcards):
     areas = {
         "complete": {"tasic": "VISp L1-6", "yao": "Ctx & Hpc"},
         "72g": {"tasic": "VISp L1-6", "bugeon": "VISp L1-3", "yao": "Ctx & Hpc"},
-        "human": {"bakken": "Human M1", "hodge": "Human MTG"}
+        "human": {"bakken": "Human M1", "hodge": "Human MTG"},
     }
     return areas[wildcards.control]
+
 
 def reference_from_condition(wildcards):
     if wildcards.control == "human":
@@ -44,12 +54,12 @@ def reference_from_condition(wildcards):
     else:
         return "tasic"
 
+
 rule all:
     input:
-        expand("figures/figure3/cross_variance_{control}.png",
-        control = CONTROLS),
-        expand("figures/figure3/principal_angles_{control}.png",
-        control = CONTROLS),
+        expand("figures/figure3/cross_variance_{control}.png", control=CONTROLS),
+        expand("figures/figure3/principal_angles_{control}.png", control=CONTROLS),
+
 
 rule cross_variance:
     input:
@@ -58,7 +68,7 @@ rule cross_variance:
         areas=areas_from_condition,
         reference=reference_from_condition,
     resources:
-        mem_mb=MEM*4,
+        mem_mb=MEM * 4,
     output:
         figure="figures/figure3/cross_variance_{control}.png",
         data="results/pc_comparison/cross_variance_mouse_{control}.pickle",
@@ -94,7 +104,7 @@ rule pca:
         figure="figures/figure3/pca_{dataset}_{control}.png",
         anndata="results/anndata/{dataset}_{control}.h5ad",
     resources:
-        mem_mb=MEM*4,
+        mem_mb=MEM * 4,
     script:
         "fig2_pca.py"
 
@@ -112,6 +122,7 @@ rule datasets:
         dataset=lambda wildcards: wildcards.dataset,
     script:
         "fig2_dataset_stats.py"
+
 
 rule intersect_mouse_genes:
     input:

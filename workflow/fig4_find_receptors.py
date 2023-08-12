@@ -24,21 +24,13 @@ tasic_subtypes =  tasic_obs.groupby("Subtype").mean()
 bugeon_subtypes =  bugeon.obs[['state_modulation', 'Subtype']].groupby("Subtype").mean()
 bugeon_subtypes.loc[:, receptors] = tasic_subtypes.loc[bugeon_subtypes.index, receptors]
 
+
 # Correlate
 def get_corr(shuffle = False):
     """
     Compute correlation between state modulation
     and receptor expression across subtypes (not cells)
     """
-    n_subtypes = bugeon_subtypes.shape[0]
-    if shuffle:
-        idx_shuffle = np.random.choice(n_subtypes, n_subtypes)
-        bugeon_subtypes.loc[:, receptors] = \
-            bugeon_subtypes.iloc[idx_shuffle].loc[:, receptors].to_numpy()
-    return bugeon_subtypes.corr()['state_modulation'].drop("state_modulation", inplace=False)
-
-  # Correlate
-def get_corr(shuffle = False):
     bugeon_subtypes = bugeon.obs[["state_modulation","Subtype"]].groupby("Subtype").mean()
     n_subtypes = bugeon_subtypes.shape[0]
     bugeon_subtypes.loc[:, receptors] = tasic_subtypes.loc[bugeon_subtypes.index, receptors]
@@ -62,7 +54,7 @@ while repetition < snakemake.params.permutations:
         repetition += 1
         print("Rep: ", repetition)
     else:
-        print("Skip due to nans, tries: ", tries) 
+        print("Skip due to nans, tries: ", tries)
         tries += 1
 
 # Plot

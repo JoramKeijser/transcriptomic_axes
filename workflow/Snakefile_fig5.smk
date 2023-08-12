@@ -3,6 +3,7 @@ rule all:
         "figures/figure5/simulation_ins_mouse.png",
         "figures/figure5/conditions_mouse.png",
 
+
 rule simulation:
     output:
         mouse="figures/figure5/simulation_ins_mouse.png",
