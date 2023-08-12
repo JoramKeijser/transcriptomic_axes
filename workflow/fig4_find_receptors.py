@@ -37,16 +37,33 @@ def get_corr(shuffle = False):
             bugeon_subtypes.iloc[idx_shuffle].loc[:, receptors].to_numpy()
     return bugeon_subtypes.corr()['state_modulation'].drop("state_modulation", inplace=False)
 
+  # Correlate
+def get_corr(shuffle = False):
+    bugeon_subtypes = bugeon.obs[["state_modulation","Subtype"]].groupby("Subtype").mean()
+    n_subtypes = bugeon_subtypes.shape[0]
+    bugeon_subtypes.loc[:, receptors] = tasic_subtypes.loc[bugeon_subtypes.index, receptors]
+    if shuffle:
+        idx = np.random.choice(n_subtypes, n_subtypes)
+        bugeon_subtypes.loc[:, receptors] = bugeon_subtypes.iloc[idx].loc[:, receptors].to_numpy()
+    C = bugeon_subtypes.corr()['state_modulation']
+    C.drop("state_modulation", inplace=True)
+    return C
+
 
 Ctrue = get_corr(False)
 random_corrs = pd.DataFrame()
 # Take care of occasional NaNs
 repetition = 0
+tries = 0
 while repetition < snakemake.params.permutations:
     new_df = get_corr(True)
     if np.sum(new_df.isna()) == 0:
         random_corrs = pd.concat((random_corrs, new_df), axis=1)
         repetition += 1
+        print("Rep: ", repetition)
+    else:
+        print("Skip due to nans, tries: ", tries) 
+        tries += 1
 
 # Plot
 print(random_corrs.shape)
