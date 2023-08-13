@@ -4,6 +4,10 @@ NSUBSETS = 1000
 NPERMUTATIONS = 1000
 
 
+def script_path(x):
+    return f"workflow/scripts/{x}"
+
+
 rule all:
     input:
         "results/pandas/activity.h5ad",
@@ -26,7 +30,7 @@ rule state_modulation:
         data="results/pandas/activity.h5ad",
         figure="figures/figure1/state_modulation.png",
     script:
-        "fig1_state_modulation.py"
+        script_path("fig1_state_modulation.py")
 
 
 rule example_trial:
@@ -39,7 +43,7 @@ rule example_trial:
     output:
         figure="figures/figure1/example_trial.png",
     script:
-        "fig1_example_trial.py"
+        script_path("fig1_example_trial.py")
 
 
 rule pca:
@@ -55,7 +59,7 @@ rule pca:
         pca_modulation="figures/figure1/pca_modulation_{transform}.png",
         regression="figures/figure1/predict_mod_{transform}.png",
     script:
-        "fig1_pca.py"
+        script_path("fig1_pca.py")
 
 
 rule receptors:
@@ -69,7 +73,7 @@ rule receptors:
     resources:
         mem_mb=8000,
     script:
-        "fig1_receptors.py"
+        script_path("fig1_receptors.py")
 
 
 # TODO: add receptors_supp
@@ -88,7 +92,7 @@ rule all_receptors:
         hist_sig="figures/figure1/receptors_examples_significant.png",
         hist_notsig="figures/figure1/receptors_examples_not_significant.png",
     script:
-        "fig1_receptors_supp.py"
+        script_path("fig1_receptors_supp.py")
 
 
 rule regression:
@@ -106,4 +110,4 @@ rule regression:
     params:
         n_subsets=NSUBSETS,
     script:
-        "fig1_regression.py"
+        script_path("fig1_regression.py")

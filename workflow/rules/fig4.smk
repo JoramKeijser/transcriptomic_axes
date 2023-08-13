@@ -13,6 +13,10 @@ species = {
 MEM = 20000
 
 
+def script_path(x):
+    return f"workflow/scripts/{x}"
+
+
 rule all:
     input:
         expand("figures/figure4/dotplot_{dataset}_1000.png", dataset=DATASETS),
@@ -31,7 +35,7 @@ rule downsampling_schematic:
     resources:
         mem_mb=32000,
     script:
-        "fig4_downsampling_schematic.py"
+        script_path("fig4_downsampling_schematic.py")
 
 
 rule downsampling:
@@ -49,7 +53,7 @@ rule downsampling:
         dataset=lambda wildcards: wildcards.dataset,
         species=lambda wildcards: species[wildcards.dataset],
     script:
-        "fig4_downsampling.py"
+        script_path("fig4_downsampling.py")
 
 
 rule dotplot:
@@ -62,7 +66,7 @@ rule dotplot:
     output:
         dotplot="figures/figure4/dotplot_{dataset}_{permutations}.png",
     script:
-        "fig4_dotplots.py"
+        script_path("fig4_dotplots.py")
 
 
 rule find_receptors:
@@ -78,7 +82,7 @@ rule find_receptors:
         figure="figures/figure4/corr_{permutations}.png",
         receptors="results/gene_lists/significant_receptors_{permutations}.txt",
     script:
-        "fig4_find_receptors.py"
+        script_path("fig4_find_receptors.py")
 
 
 # TODO: parallelize
@@ -92,4 +96,4 @@ rule allgenes:
         figure="figures/figure4/all_genes.png",
         significant_genes="results/gene_lists/significant_genes.txt",
     script:
-        "fig4_allgenes.py"
+        script_path("fig4_allgenes.py")

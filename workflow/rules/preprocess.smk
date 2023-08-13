@@ -1,8 +1,7 @@
 # Raw data to anndata
 import numpy as np
 
-DATASETS = ["bakken", "bugeon", "colquitt", "hodge",
-            "tasic", "tosches", "yao"]
+DATASETS = ["bakken", "bugeon", "colquitt", "hodge", "tasic", "tosches", "yao"]
 NUM_JOBS = 100
 NUM_CELLS = 1169213  # int(1169213 / 2)
 ROWS_PER_JOB = int(NUM_CELLS / NUM_JOBS)
@@ -12,21 +11,23 @@ MEM = 60000
 LARGEMEM = 240000
 
 
+def script_path(x):
+    return f"workflow/scripts/{x}"
+
 
 rule all:
     input:
         expand("data/anndata/{dataset}.h5ad", dataset=DATASETS),
-        "results/gene_lists/shared_genes.txt"
+        "results/gene_lists/shared_genes.txt",
 
 
 rule intersect_genes:
-   input:
-       expand("results/pandas/genes_{dataset}.csv",
-       dataset=DATASETS),
-   output:
-       shared_genes="results/gene_lists/shared_genes.txt",
-   script:
-       "../scripts/fig2_intersect_genes.py"
+    input:
+        expand("results/pandas/genes_{dataset}.csv", dataset=DATASETS),
+    output:
+        shared_genes="results/gene_lists/shared_genes.txt",
+    script:
+        script_path("fig2_intersect_genes.py")
 
 
 rule pp_yao:  # Merge partitions. Could use rows per job here
@@ -39,7 +40,7 @@ rule pp_yao:  # Merge partitions. Could use rows per job here
     output:
         anndata="data/anndata/yao.h5ad",
     script:
-        "../scripts/preprocess_yao_combine.py"
+        script_path("preprocess_yao_combine.py")
 
 
 rule partition:
@@ -56,7 +57,7 @@ rule partition:
         start_row=lambda wildcards: int(wildcards.start_row),
         num_rows=lambda wildcards: int(wildcards.num_rows),
     script:
-        "../scripts/preprocess_yao_partition.py"
+        script_path("preprocess_yao_partition.py")
 
 
 rule pp_bugeon:
@@ -67,7 +68,7 @@ rule pp_bugeon:
     resources:
         mem_mb=SMALLMEM,
     script:
-        "../scripts/preprocess_bugeon.py"
+        script_path("preprocess_bugeon.py")
 
 
 rule pp_hodge:
@@ -81,7 +82,7 @@ rule pp_hodge:
     output:
         anndata="data/anndata/hodge.h5ad",
     script:
-        "../scripts/preprocess_hodge.py"
+        script_path("preprocess_hodge.py")
 
 
 rule pp_tasic:
@@ -96,7 +97,7 @@ rule pp_tasic:
         anndata="data/anndata/tasic.h5ad",
         hv_genes="results/gene_lists/tasic_hvgs.txt",
     script:
-        "../scripts/preprocess_tasic.py"
+        script_path("preprocess_tasic.py")
 
 
 rule extract_tosches:
@@ -108,7 +109,7 @@ rule extract_tosches:
     resources:
         mem_mb=SMALLMEM,
     script:
-        "../scripts/extract_tosches.R"
+        script_path("extract_tosches.R")
 
 
 rule pp_tosches:
@@ -120,7 +121,7 @@ rule pp_tosches:
     resources:
         mem_mb=SMALLMEM,
     script:
-        "../scripts/preprocess_tosches.py"
+        script_path("preprocess_tosches.py")
 
 
 rule pp_colquitt:
@@ -131,7 +132,7 @@ rule pp_colquitt:
     resources:
         mem_mb=MEM,
     script:
-        "../scripts/preprocess_colquitt.py"
+        script_path("preprocess_colquitt.py")
 
 
 rule pp_bakken:
@@ -143,4 +144,4 @@ rule pp_bakken:
     resources:
         mem_mb=LARGEMEM,
     script:
-        "../scripts/preprocess_bakken.py"
+        script_path("/preprocess_bakken.py")

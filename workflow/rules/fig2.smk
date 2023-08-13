@@ -26,6 +26,10 @@ DESCRIPTION = {
 MEM = 20000
 
 
+def script_path(x):
+    return f"workflow/scripts/{x}"
+
+
 rule all:
     input:
         expand(
@@ -52,7 +56,7 @@ rule integrate:
     output:
         expand("results/anndata/{dataset}_integrated_{{method}}.h5ad", dataset=DATASETS),
     script:
-        "fig2_integrate.R"
+        script_path("fig2_integrate.R")
 
 
 rule fig2_dag:
@@ -80,7 +84,7 @@ rule comparison:
         angles="figures/figure2/compare_angles_{control}.png",
         cv="figures/figure2/compare_variance_{control}.png",
     script:
-        "fig2_comparison.py"
+        script_path("fig2_comparison.py")
 
 
 rule principal_angles:
@@ -96,7 +100,7 @@ rule principal_angles:
         figure="figures/figure2/principal_angles_{control}.png",
         angles="results/pc_comparison/principal_angles_{control}.pickle",
     script:
-        "fig2_principal_angles.py"
+        script_path("fig2_principal_angles.py")
 
 
 rule cross_variance:
@@ -111,7 +115,7 @@ rule cross_variance:
         figure="figures/figure2/cross_variance_{control}.png",
         data="results/pc_comparison/cross_variance_{control}.pickle",
     script:
-        "fig3_cross_variance.py"
+        script_path("fig3_cross_variance.py")
 
 
 rule pca:
@@ -127,16 +131,16 @@ rule pca:
         figure="figures/figure2/pca_{dataset}_{control}.png",
         anndata="results/anndata/{dataset}_{control}.h5ad",
     script:
-        "fig2_pca.py"
+        script_path("fig2_pca.py")
 
 
-rule intersect_genes:
-    input:
-        expand("results/gene_lists/genes_{dataset}.csv", dataset=DATASETS),
-    output:
-        shared_genes="results/gene_lists/shared_genes.txt",
-    script:
-        "fig2_intersect_genes.py"
+# rule intersect_genes:
+#     input:
+#         expand("results/gene_lists/genes_{dataset}.csv", dataset=DATASETS),
+#     output:
+#         shared_genes="results/gene_lists/shared_genes.txt",
+#     script:
+#         "fig2_intersect_genes.py"
 
 
 rule datasets_table:
@@ -146,7 +150,7 @@ rule datasets_table:
         table="results/pandas/overview.csv",
         latex="results/pandas/overview.tex",
     script:
-        "fig2_dataset_table.py"
+        script_path("fig2_dataset_table.py")
 
 
 rule datasets:
@@ -161,4 +165,4 @@ rule datasets:
     params:
         dataset=lambda wildcards: wildcards.dataset,
     script:
-        "fig2_dataset_stats.py"
+        script_path("fig2_dataset_stats.py")

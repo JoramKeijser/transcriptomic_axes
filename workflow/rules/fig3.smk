@@ -13,6 +13,10 @@ CONTROLS = ["complete", "72g", "human"]
 MEM = 20000
 
 
+def script_path(x):
+    return f"workflow/scripts/{x}"
+
+
 def genelist_from_label(wildcards):
     lists = {
         "complete": "results/gene_lists/shared_mouse_genes.txt",
@@ -73,7 +77,7 @@ rule cross_variance:
         figure="figures/figure3/cross_variance_{control}.png",
         data="results/pc_comparison/cross_variance_mouse_{control}.pickle",
     script:
-        "fig3_cross_variance.py"
+        script_path("fig3_cross_variance.py")
 
 
 # TODO: same script for fig2 and fig3 principal angles
@@ -89,7 +93,7 @@ rule principal_angles:
         figure="figures/figure3/principal_angles_{control}.png",
         angles="results/pc_comparison/principal_angles_mouse_{control}.pickle",
     script:
-        "fig3_principal_angles.py"
+        script_path("fig3_principal_angles.py")
 
 
 rule pca:
@@ -106,7 +110,7 @@ rule pca:
     resources:
         mem_mb=MEM * 4,
     script:
-        "fig2_pca.py"
+        script_path("fig2_pca.py")
 
 
 rule datasets:
@@ -121,7 +125,7 @@ rule datasets:
     params:
         dataset=lambda wildcards: wildcards.dataset,
     script:
-        "fig2_dataset_stats.py"
+        script_path("fig2_dataset_stats.py")
 
 
 rule intersect_mouse_genes:
@@ -130,4 +134,4 @@ rule intersect_mouse_genes:
     output:
         shared_genes="results/gene_lists/shared_mouse_genes.txt",
     script:
-        "fig2_intersect_genes.py"
+        script_path("fig2_intersect_genes.py")

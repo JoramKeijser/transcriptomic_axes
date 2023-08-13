@@ -26,7 +26,7 @@ rule hodge:
         wget --no-check-certificate -P {output} https://celltypes.brain-map.org/api/v2/well_known_file_download/694416044
         unzip {output}/694416044
         mv human*.{{txt,csv}} {output}
-    rm -r {output}/694416044
+        rm -r {output}/694416044
         """
 
 

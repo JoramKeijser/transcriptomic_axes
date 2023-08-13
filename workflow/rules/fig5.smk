@@ -1,3 +1,7 @@
+def script_path(x):
+    return f"workflow/scripts/{x}"
+
+
 rule all:
     input:
         "figures/figure5/simulation_ins_mouse.png",
@@ -10,7 +14,7 @@ rule simulation:
         human="figures/figure5/simulation_ins_human.png",
         turtle="figures/figure5/simulation_ins_turtle.png",
     script:
-        "fig5_simulation.py"
+        script_path("fig5_simulation.py")
 
 
 rule conditions:
@@ -19,4 +23,4 @@ rule conditions:
         human="figures/figure5/conditions_human.png",
         turtle="figures/figure5/conditions_turtle.png",
     script:
-        "fig5_conditions.py"
+        script_path("fig5_conditions.py")
