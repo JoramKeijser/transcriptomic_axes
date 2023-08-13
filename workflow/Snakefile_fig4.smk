@@ -58,7 +58,7 @@ rule dotplot:
         shared_genes="results/gene_lists/shared_genes.txt",  #TODO: receptors only
         receptors="results/gene_lists/significant_receptors_{permutations}.txt",
     resources:
-        mem_mb=16000,
+        mem_mb=32000,
     output:
         dotplot="figures/figure4/dotplot_{dataset}_{permutations}.png",
     script:

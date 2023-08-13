@@ -1,6 +1,7 @@
 jobs: 100
 rerun-incomplete: True
 keep-going: True
+retries: 4
 cluster: >-
     sbatch
     --ntasks 1
