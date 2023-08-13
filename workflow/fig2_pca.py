@@ -30,7 +30,8 @@ def subsample(adata, subclasses = ['Pvalb', 'Sst', 'Vip']):
 #    title = species[savename]
 shared_genes = np.loadtxt(snakemake.input.shared_genes, dtype=str)
 adata = ad.read_h5ad(snakemake.input.raw_anndata)
-adata = adata[:, shared_genes] # restrict to shared genes
+adata = adata[:,adata.var_names.intersection(shared_genes)]
+#adata = adata[:, shared_genes] # restrict to shared genes
 if snakemake.params.control == "meis":
     n = np.sum(adata.obs['Subclass'] == "Meis2")
     print(f"Exclude {n} Meis2 cells")
