@@ -27,7 +27,7 @@ MEM = 20000
 
 
 def script_path(x):
-    return f"workflow/scripts/{x}"
+    return f"../scripts/{x}"
 
 
 rule all:

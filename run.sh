@@ -14,4 +14,4 @@ export https_proxy=http://frontend01:3128/
 export http_proxy=http://frontend01:3128/
 
 
-snakemake --profile ../env/slurm "$@"
+snakemake --profile env/slurm "$@"

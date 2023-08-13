@@ -1,6 +1,10 @@
 SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
 DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt", "yao", "hodge"]
 
+onstart:
+    print("### Complete workflow ###")
+    shell("export https_proxy=http://frontend01:3128/")
+    shell("export http_proxy=http://frontend01:3128/")
 
 rule all:
     input:
