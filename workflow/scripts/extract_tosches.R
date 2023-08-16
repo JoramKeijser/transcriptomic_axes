@@ -1,4 +1,5 @@
 # Extract raw data from old Seurat object to something Python can handle
+library(Seurat)
 
 load(snakemake@input[["robj"]], verbose=TRUE)
 
