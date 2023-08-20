@@ -70,4 +70,4 @@ rule all:
         rules.figure5_all.input,
 
 
-ruleorder: figure1_pca > figure2_pca
+ruleorder: figure1_pca > figure2_pca > figure3_pca

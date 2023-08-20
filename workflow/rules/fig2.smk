@@ -12,8 +12,7 @@ species = {
     "yao": "mouse",
     "hodge": "Human MTG",
 }
-CONTROLS = ["complete", "meis2", "abundance", "depth",
-            "integrated_rpca"]
+CONTROLS = ["complete", "meis2", "abundance", "depth", "integrated_rpca"]
 # "integrated_rpca", "integrated_cca"]
 DESCRIPTION = {
     "complete": "",
@@ -53,7 +52,10 @@ rule integrate:
     params:
         method=lambda wildcards: wildcards.method,
     output:
-        expand("results/anndata_integrated/{dataset}_integrated_{{method}}.h5ad", dataset=DATASETS),
+        expand(
+            "results/anndata_integrated/{dataset}_integrated_{{method}}.h5ad",
+            dataset=DATASETS,
+        ),
     resources:
         mem_mb=64000,
     script:
@@ -118,6 +120,7 @@ rule cross_variance:
     script:
         script_path("fig3_cross_variance.py")
 
+
 rule pca_on_integrated:
     input:
         raw_anndata="results/anndata_integrated/{dataset}_integrated_{method}.h5ad",
@@ -132,6 +135,7 @@ rule pca_on_integrated:
         anndata="results/anndata/{dataset}_integrated_{method}.h5ad",
     script:
         script_path("fig2_pca.py")
+
 
 rule pca:
     # Input function based on contol (integrated or not)
@@ -168,18 +172,3 @@ rule datasets_table:
         latex="results/pandas/overview.tex",
     script:
         script_path("fig2_dataset_table.py")
-
-
-rule datasets:
-    input:
-        anndata="data/anndata/{dataset}.h5ad",
-    output:
-        figure="figures/figure2/QC_{dataset}.png",
-        table="results/pandas/overview_{dataset}.csv",
-        genes="results/gene_lists/genes_{dataset}.csv",
-    resources:
-        mem_mb=MEM,
-    params:
-        dataset=lambda wildcards: wildcards.dataset,
-    script:
-        script_path("fig2_dataset_stats.py")

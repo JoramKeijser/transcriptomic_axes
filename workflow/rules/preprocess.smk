@@ -1,8 +1,7 @@
 # Raw data to anndata
 import numpy as np
 
-DATASETS = ["bakken", "bugeon", "colquitt", 
-            "hodge", "tasic", "tosches", "yao"]
+DATASETS = ["bakken", "bugeon", "colquitt", "hodge", "tasic", "tosches", "yao"]
 PRIMARY = ["bakken", "colquitt", "tasic", "tosches"]
 NUM_JOBS = 100
 NUM_CELLS = 1169213  # int(1169213 / 2)
@@ -25,12 +24,12 @@ rule all:
 
 rule intersect_genes:
     input:
-        expand("results/gene_lists/genes_{dataset}.csv", 
-                dataset=PRIMARY),
+        expand("results/gene_lists/genes_{dataset}.csv", dataset=PRIMARY),
     output:
         shared_genes="results/gene_lists/shared_genes.txt",
     script:
         script_path("fig2_intersect_genes.py")
+
 
 rule datasets:
     input:
