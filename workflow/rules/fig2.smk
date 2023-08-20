@@ -12,7 +12,8 @@ species = {
     "yao": "mouse",
     "hodge": "Human MTG",
 }
-CONTROLS = ["complete", "meis2", "abundance", "depth"]
+CONTROLS = ["complete", "meis2", "abundance", "depth",
+            "integrated_rpca"]
 # "integrated_rpca", "integrated_cca"]
 DESCRIPTION = {
     "complete": "",
