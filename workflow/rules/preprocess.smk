@@ -1,7 +1,9 @@
 # Raw data to anndata
 import numpy as np
 
-DATASETS = ["bakken", "bugeon", "colquitt", "hodge", "tasic", "tosches", "yao"]
+DATASETS = ["bakken", "bugeon", "colquitt", 
+            "hodge", "tasic", "tosches", "yao"]
+PRIMARY = ["bakken", "colquitt", "tasic", "tosches"]
 NUM_JOBS = 100
 NUM_CELLS = 1169213  # int(1169213 / 2)
 ROWS_PER_JOB = int(NUM_CELLS / NUM_JOBS)
@@ -23,11 +25,26 @@ rule all:
 
 rule intersect_genes:
     input:
-        expand("results/pandas/genes_{dataset}.csv", dataset=DATASETS),
+        expand("results/gene_lists/genes_{dataset}.csv", 
+                dataset=PRIMARY),
     output:
         shared_genes="results/gene_lists/shared_genes.txt",
     script:
         script_path("fig2_intersect_genes.py")
+
+rule datasets:
+    input:
+        anndata="data/anndata/{dataset}.h5ad",
+    output:
+        figure="figures/figure2/QC_{dataset}.png",
+        table="results/pandas/overview_{dataset}.csv",
+        genes="results/gene_lists/genes_{dataset}.csv",
+    resources:
+        mem_mb=MEM,
+    params:
+        dataset=lambda wildcards: wildcards.dataset,
+    script:
+        script_path("fig2_dataset_stats.py")
 
 
 rule pp_yao:  # Merge partitions. Could use rows per job here

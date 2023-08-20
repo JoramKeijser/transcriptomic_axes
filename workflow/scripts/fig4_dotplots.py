@@ -11,17 +11,17 @@ sns.set_context("poster")
 
 
 def main():
-    datadir = "./data/anndata/"
-    savedir = "./figures/figure5/"
-    names = ["hodge", "yao", "tasic", "tosches", "bakken", "colquitt"]
     receptors = np.loadtxt(snakemake.input.receptors, dtype=str)
     shared_genes = np.loadtxt(snakemake.input.shared_genes, dtype=str)
     receptors = np.sort(list(set(receptors).intersection(shared_genes)))
     print("Shared receptors", receptors)
     adata = ad.read_h5ad(snakemake.input.anndata)
     # Subset receptors, z-score
+    print("Receptors")
+    print(receptors)
     adata = adata[:, receptors]
     adata.layers["scaled"] = sc.pp.scale(adata, copy=True).X
+
     fig, ax = plt.subplots(figsize=(8, 6))
     sc.pl.dotplot(
         adata,
