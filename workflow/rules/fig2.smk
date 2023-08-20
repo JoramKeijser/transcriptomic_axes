@@ -33,11 +33,11 @@ def script_path(x):
 
 rule all:
     input:
-        # expand(
-        #     "figures/figure2/pca_{dataset}_{control}.png",
-        #     dataset=DATASETS,
-        #     control=CONTROLS,
-        # ),
+        expand(
+            "figures/figure2/pca_{dataset}_{control}.png",
+            dataset=DATASETS,
+            control=CONTROLS,
+        ),
         expand("figures/figure2/principal_angles_{control}.png", control=CONTROLS),
         expand("figures/figure2/cross_variance_{control}.png", control=CONTROLS),
         expand(
@@ -116,6 +116,20 @@ rule cross_variance:
     script:
         script_path("fig3_cross_variance.py")
 
+rule pca_on_integrated:
+    input:
+        raw_anndata="results/anndata/{dataset}_integrated_{method}.h5ad",
+        shared_genes="results/gene_lists/shared_genes.txt",
+    params:
+        species=lambda wildcards: species[wildcards.dataset],
+        control=lambda wildcards: f"integrated_{wildcards.method}",
+    resources:
+        mem_mb=MEM,
+    output:
+        figure="figures/figure2/pca_{dataset}_integrated_{method}.png",
+        anndata="results/anndata/{dataset}_integrated_{method}.h5ad",
+    script:
+        script_path("fig2_pca.py")
 
 rule pca:
     # Input function based on contol (integrated or not)
