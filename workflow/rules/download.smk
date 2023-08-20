@@ -70,8 +70,7 @@ rule colquitt:
 
 rule tosches:
     output:
-        #"data/tosches/turtle.neurons.Robj",
-        directory("data/tosches/")
+        "data/tosches/turtle.neurons.Robj",
     shell:
         """
         mkdir {output[0]}

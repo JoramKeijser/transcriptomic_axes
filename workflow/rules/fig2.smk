@@ -22,9 +22,7 @@ DESCRIPTION = {
     "abundance": "Matched Abundance",
     "depth": "Matched Depth",
 }
-# TODO: flag to avoid naming "complete"
 MEM = 20000
-
 
 def script_path(x):
     return f"../scripts/{x}"
@@ -35,13 +33,17 @@ rule all:
         expand(
             "figures/figure2/pca_{dataset}_{control}.png",
             dataset=DATASETS,
-            control=CONTROLS,
+            control=[c for c in CONTROLS if "integrated" not in c],
+        ),
+        expand(
+            "figures/figure2/pca_{dataset}_integrated_rpca.png",
+            dataset=DATASETS,
         ),
         expand("figures/figure2/principal_angles_{control}.png", control=CONTROLS),
         expand("figures/figure2/cross_variance_{control}.png", control=CONTROLS),
         expand(
             "figures/figure2/compare_angles_{control}.png",
-            control=["meis2", "abundance", "depth"],
+            control=CONTROLS,
         ),
 
 
