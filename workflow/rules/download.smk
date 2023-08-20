@@ -70,11 +70,12 @@ rule colquitt:
 
 rule tosches:
     output:
-        "data/tosches/turtle.neurons.Robj",
+        #"data/tosches/turtle.neurons.Robj",
+        directory("data/tosches/")
     shell:
         """
-        mkdir {output}
-        wget -P {output} https://public.brain.mpg.de/Laurent/ReptilePallium2018/turtle.neurons.Robj
+        mkdir {output[0]}
+        wget -P {output[0]} https://public.brain.mpg.de/Laurent/ReptilePallium2018/turtle.neurons.Robj
         """
 
 
