@@ -68,6 +68,7 @@ for (file in snakemake@output){
     print(name)
     srt <- integrated[,integrated@meta.data$name == name]
     # TODO: PCA
+    srt %<>% ScaleData() %>% RunPCA()
     ad <- AnnData(X = GetAssayData(object = srt))
     ad <- t(ad) # obs x features
     ad$obs <- srt@meta.data

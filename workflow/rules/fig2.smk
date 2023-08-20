@@ -32,11 +32,11 @@ def script_path(x):
 
 rule all:
     input:
-        expand(
-            "figures/figure2/pca_{dataset}_{control}.png",
-            dataset=DATASETS,
-            control=CONTROLS,
-        ),
+        # expand(
+        #     "figures/figure2/pca_{dataset}_{control}.png",
+        #     dataset=DATASETS,
+        #     control=CONTROLS,
+        # ),
         expand("figures/figure2/principal_angles_{control}.png", control=CONTROLS),
         expand("figures/figure2/cross_variance_{control}.png", control=CONTROLS),
         expand(
@@ -46,8 +46,6 @@ rule all:
 
 
 rule integrate:
-    # TODO: Name input files - or not
-    # TODO: still need to do PCA on each separately.
     input:
         reference=f"data/anndata/{REFERENCE}.h5ad",
         others=expand("data/anndata/{dataset}.h5ad", dataset=OTHERS),
@@ -119,6 +117,8 @@ rule cross_variance:
 
 
 rule pca:
+    # Input function based on contol (integrated or not)
+    # if integrated - no need for shared genes
     input:
         raw_anndata="data/anndata/{dataset}.h5ad",
         shared_genes="results/gene_lists/shared_genes.txt",
