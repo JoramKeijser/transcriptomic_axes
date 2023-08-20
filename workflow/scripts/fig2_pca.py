@@ -66,8 +66,10 @@ elif snakemake.params.control == "bugeonsst":
     adata = adata[idx]
 
 
-sc.pp.normalize_total(adata, target_sum=constants.NORMALIZE_TARGET_SUM)
-sc.pp.log1p(adata)
+if "integrated" not in snakemake.params.control:
+    # still need to log norm  
+    sc.pp.normalize_total(adata, target_sum=constants.NORMALIZE_TARGET_SUM)
+    sc.pp.log1p(adata)
 sc.pp.highly_variable_genes(adata, n_top_genes=constants.NUM_HVG_GENES)
 sc.pp.pca(adata, n_comps=constants.NUM_PCS)
 

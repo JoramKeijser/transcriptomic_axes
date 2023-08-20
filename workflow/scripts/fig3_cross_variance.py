@@ -25,14 +25,17 @@ for dataset in snakemake.input:
     name = dataset.split("/")[-1].split("h5ad")[0].split("_")[0]
     print(name)
     datasets[name] = ad.read_h5ad(dataset)
-
+    if "sparse" in str(type(datasets[name].X)):
+        datasets[name].X = np.asarray(datasets[name].X.todense())
+    
 remaining_datasets = [name for name in list(datasets.keys()) if name != reference]
 print(remaining_datasets)
 
 # PCA on reference
 # TODO: NUM_PCs and HVGs to config file
 if "highly_variable" not in datasets[reference].obs.columns:
-    datasets[reference].uns["log1p"]["base"] = None  # anndata bug
+    if "log1p" in datasets[reference].uns.keys():
+        datasets[reference].uns["log1p"]["base"] = None  # anndata bug
     sc.pp.highly_variable_genes(
         datasets[reference], n_top_genes=constants.NUM_HVG_GENES
     )

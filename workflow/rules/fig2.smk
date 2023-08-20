@@ -53,7 +53,9 @@ rule integrate:
     params:
         method=lambda wildcards: wildcards.method,
     output:
-        expand("results/anndata/{dataset}_integrated_{{method}}.h5ad", dataset=DATASETS),
+        expand("results/anndata_integrated/{dataset}_integrated_{{method}}.h5ad", dataset=DATASETS),
+    resources:
+        mem_mb=64000,
     script:
         script_path("fig2_integrate.R")
 
@@ -118,7 +120,7 @@ rule cross_variance:
 
 rule pca_on_integrated:
     input:
-        raw_anndata="results/anndata/{dataset}_integrated_{method}.h5ad",
+        raw_anndata="results/anndata_integrated/{dataset}_integrated_{method}.h5ad",
         shared_genes="results/gene_lists/shared_genes.txt",
     params:
         species=lambda wildcards: species[wildcards.dataset],
