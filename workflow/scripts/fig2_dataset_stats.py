@@ -46,7 +46,6 @@ ax[2].set_xlabel("Sequencing depth")
 ax[2].set_ylabel("Number of genes")
 fig.tight_layout()
 sns.despine()
-plt.savefig(snakemake.output.figure, dpi=300)
 
 df = pd.DataFrame(np.array(stats)[None], columns=["name", "neurons", "depth", "genes"])
 df.to_csv(snakemake.output.table, index=False)

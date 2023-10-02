@@ -35,7 +35,6 @@ rule datasets:
     input:
         anndata="data/anndata/{dataset}.h5ad",
     output:
-        figure="figures/figure2/QC_{dataset}.png",
         table="results/pandas/overview_{dataset}.csv",
         genes="results/gene_lists/genes_{dataset}.csv",
     resources:
