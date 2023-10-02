@@ -58,6 +58,7 @@ plt.savefig(snakemake.output[0], dpi=300)
 
 # Plot subclasses
 subclasses = bugeon.obs["Subclass"].cat.categories
+subclasses = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"] #bugeon.obs["Subclass"].cat.categories
 print(subclasses)
 stats = {}
 for i, subclass in enumerate(subclasses):
@@ -109,14 +110,14 @@ plt.figure()
 plt.scatter(ns, R2s)
 for i, subclass in enumerate(subclasses):
     plt.scatter(ns[i], R2s[i], alpha=0.75, s=200)
-    plt.text(ns[i] - 20, R2s[i], subclass)  # annote, center x-coord
+    plt.text(ns[i] - 20, R2s[i], subclass)  
 sns.despine()
 plt.xlabel("# cells")
 plt.ylabel("$R^2$")
 plt.tight_layout()
 plt.savefig(snakemake.output[-2], dpi=300)
 
-subclasses = bugeon.obs["Subclass"].cat.categories
+
 n_subsets = snakemake.params.n_subsets
 R2_sub = {}
 for i, subclass in enumerate(subclasses):

@@ -1,12 +1,8 @@
-onstart:
-    print("### Complete workflow ###")
-    shell("mkdir -p log/jobs")
-
-
 module figure1:
     snakefile:
         "fig1.smk"
-
+    config:
+        config["fig1"]
 
 use rule * from figure1 as figure1_*
 

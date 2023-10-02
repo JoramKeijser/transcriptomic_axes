@@ -17,6 +17,12 @@ rule all:
         "results/pandas/activity.h5ad",
         expand("results/anndata/bugeon_{transform}.h5ad", transform=TRANSFORMS),
         expand("figures/figure1/receptors_{transform}.png", transform=TRANSFORMS),
+
+
+rule all_supp:
+    # Supplementary fig. with per-subclass regression
+    # and all receptors
+    input:
         "figures/figure1/regression_All.png",
         "figures/figure1/tracksplot_tasic.png",
 

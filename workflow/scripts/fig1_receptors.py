@@ -62,7 +62,7 @@ significant_receptors = []
 really_significant_receptors = []
 pvals = []
 fig, ax = plt.subplots(
-    1, len(receptors), figsize=(18 * CM2INCH * len(receptors) / 5, 3.5 * CM2INCH)
+    1, len(receptors), figsize=(16 * CM2INCH * len(receptors) / 5, 3.5 * CM2INCH)
 )
 for i, receptor in enumerate(receptors):
     sns.scatterplot(

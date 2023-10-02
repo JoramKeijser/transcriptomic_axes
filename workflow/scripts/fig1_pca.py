@@ -115,7 +115,7 @@ by_subtype.to_csv(snakemake.output.by_subtype)
 
 
 print("Predicting modulation")
-FONTSIZE = 25
+FONTSIZE = 22
 MODULATION = "State modulation"
 print(f"Predict {MODULATION} from tPCs")
 dropped_na = by_subtype.dropna()
