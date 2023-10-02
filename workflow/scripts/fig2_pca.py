@@ -35,7 +35,7 @@ adata = ad.read_h5ad(snakemake.input.raw_anndata)
 adata = adata[:, 
     np.sort(adata.var_names.intersection(shared_genes))]
 # adata = adata[:, shared_genes] # restrict to shared genes
-if snakemake.params.control == "meis":
+if snakemake.params.control == "meis2":
     n = np.sum(adata.obs["Subclass"] == "Meis2")
     print(f"Exclude {n} Meis2 cells")
     adata = adata[adata.obs["Subclass"] != "Meis2"]
