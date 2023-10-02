@@ -7,6 +7,8 @@ areas = {
     "yao": "Ctx & Hpc",
     "bakken": "Human M1",
     "hodge": "Human MTG",
+    "colquitt": "Zebra Finch",
+    "tosches": "Turtle"
 }
 CONTROLS = ["complete", "72g", "human"]
 # TODO: bugeon_log -> bugeon
@@ -42,7 +44,6 @@ def datasets_from_condition(wildcards):
         )
     )
 
-
 def areas_from_condition(wildcards):
     areas = {
         "complete": {"tasic": "VISp L1-6", "yao": "Ctx & Hpc"},
@@ -67,7 +68,7 @@ rule all:
 
 rule cross_variance:
     input:
-        datasets_from_condition,
+        datasets_from_condition,        
     params:
         areas=areas_from_condition,
         reference=reference_from_condition,
@@ -80,11 +81,12 @@ rule cross_variance:
         script_path("fig3_cross_variance.py")
 
 
-# TODO: same script for fig2 and fig3 principal angles
 rule principal_angles:
     input:
-        datasets_from_condition,
+        same_species = datasets_from_condition,
+        baseline_angles = "results/pc_comparison/principal_angles_complete.pickle", 
     params:
+        control= lambda wildcards: wildcards.control,
         areas=areas_from_condition,
         reference=reference_from_condition,
     resources:

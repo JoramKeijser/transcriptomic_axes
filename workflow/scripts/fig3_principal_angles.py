@@ -11,10 +11,9 @@ sns.set_context("poster")
 sc.settings.dpi_save = 300
 
 areas = snakemake.params.areas
-
 print("Loading PCs")
 PC_subspace = {}
-for dataset in snakemake.input:
+for dataset in snakemake.input.same_species:
     name = dataset.split("/")[-1].split("h5ad")[0].split("_")[0]
     print(name)
     adata = ad.read_h5ad(dataset)
@@ -48,6 +47,16 @@ for i, name in enumerate(remaining):
         label=areas[name],
         color=colors[name],
     )
+
+# Add between-species baseline
+if snakemake.params.control != "72g": 
+    with open(snakemake.input.baseline_angles, 'rb') as handle:
+        d = pickle.load(handle)
+    for i, angles in enumerate(d.values()):
+        if i == 0:
+            plt.plot(angles, color="gray", label = "Other species")
+        else:
+            plt.plot(angles, color="gray")
 
 plt.xlabel("tPC subspace dimension")
 plt.ylabel("Principal angle (deg.)")
