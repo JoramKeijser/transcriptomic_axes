@@ -42,9 +42,11 @@ def main():
             alpha=1,
             color=colors[i + 1],
         )
-        for i, (x,y) in enumerate(zip(angles[key][:show], angles_condition[key][:show])):
-            plt.text(x, y ,i+1, fontsize=15)
-    #plt.legend(bbox_to_anchor=(1,1), fontsize = 20)
+        for i, (x, y) in enumerate(
+            zip(angles[key][:show], angles_condition[key][:show])
+        ):
+            plt.text(x, y, i + 1, fontsize=15)
+    # plt.legend(bbox_to_anchor=(1,1), fontsize = 20)
     plt.axis("equal")
     ticks = np.arange(45, 105, 15)
     plt.xticks(ticks, fontsize=20)
@@ -66,8 +68,10 @@ def main():
             alpha=1,
             color=colors[i + 1],
         )
-        for i, (x,y) in enumerate(zip(crossvariance[key][:show], crossvariance_condition[key][:show])):
-            plt.text(x*100, y*100, i+1, fontsize=15)
+        for i, (x, y) in enumerate(
+            zip(crossvariance[key][:show], crossvariance_condition[key][:show])
+        ):
+            plt.text(x * 100, y * 100, i + 1, fontsize=15)
     plt.axis("equal")
     plt.plot([0, 20], [0, 20], color="black", linestyle=":")
     if "control" in snakemake.params.control:

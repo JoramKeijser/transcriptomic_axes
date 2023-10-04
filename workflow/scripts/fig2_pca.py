@@ -32,8 +32,7 @@ def subsample(adata, subclasses=["Pvalb", "Sst", "Vip"]):
 #    title = species[savename]
 shared_genes = np.loadtxt(snakemake.input.shared_genes, dtype=str)
 adata = ad.read_h5ad(snakemake.input.raw_anndata)
-adata = adata[:, 
-    np.sort(adata.var_names.intersection(shared_genes))]
+adata = adata[:, np.sort(adata.var_names.intersection(shared_genes))]
 # adata = adata[:, shared_genes] # restrict to shared genes
 if snakemake.params.control == "meis2":
     n = np.sum(adata.obs["Subclass"] == "Meis2")
@@ -68,40 +67,44 @@ elif snakemake.params.control == "bugeonsst":
 
 
 if "integrated" not in snakemake.params.control:
-    # still need to log norm  
+    # still need to log norm
     sc.pp.normalize_total(adata, target_sum=constants.NORMALIZE_TARGET_SUM)
     sc.pp.log1p(adata)
 sc.pp.highly_variable_genes(adata, n_top_genes=constants.NUM_HVG_GENES)
 sc.pp.pca(adata, n_comps=constants.NUM_PCS)
 
+order = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg", "Meis2", "Gad1", "Pax6"]
 if "hodge" in snakemake.input.raw_anndata:
     # Still need to do Subclass assignment
-    print("Clustering Hodge")
-    sc.pp.neighbors(adata)
-    sc.tl.leiden(adata, resolution=0.1)
-    equiv = {
-        "0": "Pvalb",
-        "8": "Pvalb",
-        "2": "Sst",
-        "7": "Sst",
-        "3": "Lamp5",
-        "4": "Lamp5",
-        "6": "Lamp5",
-        "1": "Vip",
-        "5": "Vip",
-    }
-    adata.obs["Subclass"] = adata.obs["leiden"].map(equiv)
+    def camelcase(name):
+        return name[0].upper() + name[1:].lower()
+
+    # Extract subclass from cluster name
+    # Exception: "Inh L1 Lamp5 NMMBR" from paper is coded in the data as SST
+    adata.obs["Subclass"] = [
+        "Lamp5" if cl == "Inh L1 SST NMBR" else camelcase(cl.split(" ")[2])
+        for cl in adata.obs["cluster"]
+    ]
+    # Usual order with 2 additional human-specific types
+    adata.obs["Subclass"] = adata.obs["Subclass"].astype("category")  #
+    missing = [
+        subclass
+        for subclass in order
+        if subclass not in np.unique(adata.obs["Subclass"])
+    ]
+    adata.obs["Subclass"] = adata.obs["Subclass"].cat.add_categories(missing)
+    adata.obs["Subclass"] = adata.obs["Subclass"].cat.reorder_categories(order)
+
 
 # Preserve the order
-subclass_order = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg", "Meis2"]
 adata.obs["Subclass"] = adata.obs["Subclass"].astype("category")
 missing_subclasses = [
     subclass
-    for subclass in subclass_order
+    for subclass in order
     if subclass not in adata.obs["Subclass"].cat.categories
 ]
 adata.obs["Subclass"] = adata.obs["Subclass"].cat.add_categories(missing_subclasses)
-adata.obs["Subclass"] = adata.obs["Subclass"].cat.reorder_categories(subclass_order)
+adata.obs["Subclass"] = adata.obs["Subclass"].cat.reorder_categories(order)
 # Choose (arbitrary) sign of PCs consistenly across datasets
 if np.sum(adata.obs["Subclass"] == "Meis2") > 0:
     if (
@@ -112,15 +115,13 @@ if np.sum(adata.obs["Subclass"] == "Meis2") > 0:
         adata.varm["PCs"][:, 0] *= -1
 
 adata = pca_tools.orient_axes(adata)
-print(snakemake.input.raw_anndata)
+if "colquitt" in snakemake.input.raw_anndata:
+    # Flip 2nd axis
+    adata.obsm["X_pca"][:, 1] *= -1
+    adata.varm["PCs"][:, 1] *= -1
 print(f"First 2 tPCs capture {adata.uns['pca']['variance_ratio'][:2].sum()*100:.1f}%")
-# TODO: write to log file
-fig, ax = plt.subplots()
-sns.despine()
-# if savename.startswith("tosches"):
-#    size = 100 # small sample size -> larger dots
-# else:
-#    size = 50
+
+
 fig, ax = plt.subplots()
 sc.pl.pca(
     adata,
