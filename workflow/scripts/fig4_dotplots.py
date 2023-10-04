@@ -34,7 +34,7 @@ def main():
         layer="scaled",
         vmin=-2,
         vmax=2,
-        cmap="RdYlBu_r",
+        cmap="Blues",
         return_fig=False,
         show=False,
         var_group_rotation=45,

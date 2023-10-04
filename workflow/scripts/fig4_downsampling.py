@@ -28,30 +28,31 @@ sns.set_context("poster")
 
 rng = np.random.RandomState(123)
 
-
+# Load reference/deep and shallow dataset
 datasets = {}
 datasets["reference"] = ad.read_h5ad(snakemake.input.dataset)
 datasets["shallow"] = ad.read_h5ad(snakemake.input.shallow)
-# Which receptors to compare?
-# receptors = np.loadtxt(snakemake.input.receptors, dtype=str)
-# shared_genes = np.loadtxt(snakemake.input.shared_genes, dtype=str)
-receptors = np.loadtxt(snakemake.input.receptors, dtype=str)
-shared_genes = np.loadtxt(snakemake.input.shared_genes, dtype=str)
-genes = datasets["reference"].var_names  # TODO
-genes = set(datasets["reference"].var_names).intersection(datasets["shallow"].var_names)
-shared_genes = np.sort(list(set(receptors).intersection(genes)))
+# Only select shared genes to compute depth for same # of genes
+shared_genes = datasets["shallow"].var_names.intersection(
+    datasets["reference"].var_names
+)
+# Shared cholinergic receptors with significant correlation to state modulation
+receptors = ["Chrm3", "Chrm4", "Chrna3", "Chrna4", "Chrna5"]
+print("Shared genes:", len(shared_genes))
 # Subset to shared genes - compute depth
 for dataset in ["reference", "shallow"]:
     datasets[dataset] = datasets[dataset][:, shared_genes].copy()
     datasets[dataset].obs["total_counts"] = datasets[dataset].X.sum(1)
-genes = np.sort(list(set(receptors).intersection(shared_genes)))
+    # Will only consider receptors/genes of interest - avoid sampling huge matrix
+    datasets[dataset] = datasets[dataset][:, receptors]
 
+# Compute relative sequencing depth of shallow compared to reference dataset
 depth = np.median(datasets["shallow"].obs["total_counts"])
 relative_depth = float(depth / np.median(datasets["reference"].obs["total_counts"]))
 print(f"relative depth: {relative_depth:0.3f}")
 assert relative_depth <= 1.0
 datasets["subsampled"] = datasets["reference"].copy()
-# Make sure shallower is not larger
+# Make sure shallower does not have more samples
 if datasets["shallow"].shape[0] > datasets["reference"].shape[0]:
     print("Subsampling shallower dataset")
     _, idx = sc.pp.subsample(
@@ -59,9 +60,13 @@ if datasets["shallow"].shape[0] > datasets["reference"].shape[0]:
     )
     datasets["shallow"] = datasets["shallow"][idx]
 
-all_samples = {gene: [] for gene in genes}
-control = {gene: datasets["shallow"][:, gene].X.sum() for gene in genes}
-subsampled_counts = {gene: np.zeros((snakemake.params.num_samples,)) for gene in genes}
+control = {
+    receptor: datasets["shallow"][:, receptor].X.sum() for receptor in receptors
+}  # Counts in shallow dataset
+# Repeatedly subsample reference dataset
+subsampled_counts = {
+    receptor: np.zeros((snakemake.params.num_samples,)) for receptor in receptors
+}
 for sample in range(snakemake.params.num_samples):
     _, idx = sc.pp.subsample(
         datasets["reference"].X, n_obs=datasets["shallow"].shape[0], copy=True
@@ -70,11 +75,13 @@ for sample in range(snakemake.params.num_samples):
     datasets["subsampled"].X = rng.binomial(
         np.array(datasets["subsampled"].X, dtype=int), p=relative_depth
     )
-    for gene in genes:
-        subsampled_counts[gene][sample] = datasets["subsampled"][:, gene].X.sum()
+    for receptor in receptors:
+        subsampled_counts[receptor][sample] = datasets["subsampled"][
+            :, receptor
+        ].X.sum()
 
 # Put result into data frame
-df = pd.DataFrame(columns=["statistic", "gene"])
+df = pd.DataFrame(columns=["statistic", "receptor"])
 pseudo_count = 1.0
 for gene in subsampled_counts.keys():
     statistic = np.log2(
@@ -92,7 +99,7 @@ sns.violinplot(
     x="statistic",
     y="gene",
     inner="box",
-    color=sns.color_palette("colorblind")[2],
+    color=sns.color_palette("Blues")[-1],
     alpha=0.2,
     saturation=1,
     linewidth=1,

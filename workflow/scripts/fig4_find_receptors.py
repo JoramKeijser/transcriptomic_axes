@@ -64,7 +64,6 @@ while repetition < snakemake.params.permutations:
     if np.sum(new_df.isna()) == 0:
         random_corrs = pd.concat((random_corrs, new_df), axis=1)
         repetition += 1
-        print("Rep: ", repetition)
     else:
         print("Skip due to nans, tries: ", tries)
         tries += 1
