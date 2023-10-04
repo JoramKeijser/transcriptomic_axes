@@ -24,6 +24,7 @@ DESCRIPTION = {
 }
 MEM = 20000
 
+
 def script_path(x):
     return f"../scripts/{x}"
 
@@ -45,6 +46,7 @@ rule all:
             "figures/figure2/compare_angles_{control}.png",
             control=CONTROLS,
         ),
+        expand("figures/figure2/predict_from_{dataset}.png", dataset=DATASETS),
 
 
 rule integrate:
@@ -145,6 +147,7 @@ rule pca:
     input:
         raw_anndata="data/anndata/{dataset}.h5ad",
         shared_genes="results/gene_lists/shared_genes.txt",
+        bugeon="data/anndata/bugeon.h5ad",
     params:
         species=lambda wildcards: species[wildcards.dataset],
         control=lambda wildcards: wildcards.control,
@@ -157,13 +160,18 @@ rule pca:
         script_path("fig2_pca.py")
 
 
-# rule intersect_genes:
-#     input:
-#         expand("results/gene_lists/genes_{dataset}.csv", dataset=DATASETS),
-#     output:
-#         shared_genes="results/gene_lists/shared_genes.txt",
-#     script:
-#         "fig2_intersect_genes.py"
+rule predict_across_species:
+    # Predict state modulation in mouse (Bugeon) data
+    # from tPC1 from other species
+    input:
+        bugeon="results/anndata/bugeon_log.h5ad",
+        adata="results/anndata/{dataset}_72g.h5ad",
+    params:
+        species=lambda wildcards: species[wildcards.dataset],
+    output:
+        regression="figures/figure2/predict_from_{dataset}.png",
+    script:
+        script_path("fig2_predict_from_other.py")
 
 
 rule datasets_table:

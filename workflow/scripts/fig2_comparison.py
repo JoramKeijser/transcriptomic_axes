@@ -29,10 +29,7 @@ def main():
         crossvariance_condition = pickle.load(handle)
 
     plt.figure()  # Do the angles
-    plt.plot([45, 90], [45, 90], color="black", linestyle=":")
     plt.xlabel("Angles")
-    plt.xticks([50, 70, 90])
-    plt.yticks([50, 70, 90])
     for i, key in enumerate(["Human", "Zebra finch", "Turtle"]):
         plt.scatter(
             angles[key][:show],
@@ -48,9 +45,15 @@ def main():
             plt.text(x, y, i + 1, fontsize=15)
     # plt.legend(bbox_to_anchor=(1,1), fontsize = 20)
     plt.axis("equal")
-    ticks = np.arange(45, 105, 15)
+    if snakemake.wildcards.control == "integrated_rpca":
+        ticks = np.arange(0, 105, 15)
+    else:
+        ticks = np.arange(45, 105, 15)
+    print("ticks", ticks)
     plt.xticks(ticks, fontsize=20)
     plt.yticks(ticks, fontsize=20)
+    # identity line
+    plt.plot([ticks[0], ticks[-1]], [ticks[0], ticks[-1]], color="black", linestyle=":")
     sns.despine()
     plt.ylabel("Angles \n" + snakemake.params.control)
     plt.title("Principal angles (deg.)")
@@ -73,14 +76,14 @@ def main():
         ):
             plt.text(x * 100, y * 100, i + 1, fontsize=15)
     plt.axis("equal")
-    plt.plot([0, 20], [0, 20], color="black", linestyle=":")
-    if "control" in snakemake.params.control:
+    if snakemake.wildcards.control == "integrated_rpca":
         ticks = np.arange(0, 100, 20)
     else:
         ticks = [0, 10, 20]
     plt.xlabel("% variance")
     plt.xticks(ticks)
     plt.yticks(ticks)
+    plt.plot([ticks[0], ticks[-1]], [ticks[0], ticks[-1]], color="black", linestyle=":")
     sns.despine()
     plt.ylabel("% variance. \n" + snakemake.params.control)
     plt.title("Rel. variance explained (%)")

@@ -64,7 +64,10 @@ elif snakemake.params.control == "bugeonsst":
         for (subclass, subtype) in zip(adata.obs["Subclass"], adata.obs["Subtype"])
     ]
     adata = adata[idx]
-
+elif snakemake.params.control == "72g":
+    bugeon = ad.read_h5ad(snakemake.input.bugeon)
+    shared_genes = bugeon.var_names.intersection(adata.var_names)
+    adata = adata[:, shared_genes]
 
 if "integrated" not in snakemake.params.control:
     # still need to log norm
