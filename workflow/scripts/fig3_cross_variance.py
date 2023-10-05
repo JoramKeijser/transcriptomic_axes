@@ -27,7 +27,7 @@ for dataset in snakemake.input:
     datasets[name] = ad.read_h5ad(dataset)
     if "sparse" in str(type(datasets[name].X)):
         datasets[name].X = np.asarray(datasets[name].X.todense())
-    
+
 remaining_datasets = [name for name in list(datasets.keys()) if name != reference]
 print(remaining_datasets)
 

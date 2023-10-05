@@ -118,6 +118,4 @@ plt.xlim([-7, 7])
 plt.savefig(snakemake.output.vln, dpi=300)
 
 
-
-
 # df.to_csv(savedir + f"{args.shallow_data}_{args.num_samples}.csv")

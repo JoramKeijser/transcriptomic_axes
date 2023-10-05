@@ -49,12 +49,12 @@ for i, name in enumerate(remaining):
     )
 
 # Add between-species baseline
-if snakemake.params.control != "72g": 
-    with open(snakemake.input.baseline_angles, 'rb') as handle:
+if snakemake.params.control != "72g":
+    with open(snakemake.input.baseline_angles, "rb") as handle:
         d = pickle.load(handle)
     for i, angles in enumerate(d.values()):
         if i == 0:
-            plt.plot(angles, color="gray", label = "Other species")
+            plt.plot(angles, color="gray", label="Other species")
         else:
             plt.plot(angles, color="gray")
 
