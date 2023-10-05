@@ -1,7 +1,8 @@
 DATASETS = ["yao", "tasic", "tosches", "bakken", "colquitt"]
-# TODO: add 'hodge' - also
-PERMUTATIONS = 10
-SAMPLES = 10
+PERMUTATIONS = 10000 
+# Estimating null distribution of corr. between modulation and expression
+SAMPLES = 100
+# Estimating RNA count distribution by downsampling 
 species = {
     "colquitt": "Zebra finch",
     "tosches": "Turtle",
@@ -19,10 +20,12 @@ def script_path(x):
 
 rule all:
     input:
+        "figures/figure4/corr_1000.png",
+        "figures/figure4/all_genes.png",
         expand("figures/figure4/dotplot_{dataset}_1000.png", dataset=DATASETS),
         "figures/figure4/schematic.png",
         expand(
-            "figures/figure4/subsample_vln_{dataset}_n1000_p1000.png", dataset=DATASETS
+            "figures/figure4/subsample_vln_{dataset}_n100_p1000.png", dataset=DATASETS
         ),
 
 
@@ -42,10 +45,8 @@ rule downsampling:
     input:
         dataset="data/anndata/tasic.h5ad",  # deep reference dataset TODO: use yao for hodge
         shallow="data/anndata/{dataset}.h5ad",  # shallower dataset
-        shared_genes="results/gene_lists/shared_genes.txt",  #TODO: shared receptors
-        receptors="results/gene_lists/significant_receptors_{permutations}.txt",
     resources:
-        mem_mb=32000,
+        mem_mb=64000,
     output:
         vln="figures/figure4/subsample_vln_{dataset}_n{num_samples}_p{permutations}.png",
     params:
@@ -85,7 +86,6 @@ rule find_receptors:
         script_path("fig4_find_receptors.py")
 
 
-# TODO: parallelize
 rule allgenes:
     input:
         bugeon="data/anndata/bugeon.h5ad",

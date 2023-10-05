@@ -130,6 +130,7 @@ def main():
     plt.xticks([1, n_genes])
     sns.despine()
     plt.ylabel("correlation w/ \n state modulation")
+    plt.xlabel("Genes (sorted)")
     plt.tight_layout()
     plt.savefig(snakemake.output.figure, dpi=300)
 

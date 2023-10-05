@@ -109,13 +109,15 @@ sns.violinplot(
 plt.xlabel("$\Delta$ expression (log2fc)")
 plt.ylabel("")
 plt.vlines(0, -0.5, 4.5, color="gray", linestyle=":", lw=1)
+# approximat area of within-species variability
 plt.fill_betweenx([-0.5, 4.5], -2, 2, color="gray", alpha=0.1)
 sns.despine()
 plt.title(snakemake.params.species)
 plt.tight_layout()
+plt.xlim([-7, 7])
 plt.savefig(snakemake.output.vln, dpi=300)
-# plt.xlim([-7, 7])
-# plt.tight_layout()
-# plt.savefig(f"./figures/figure5/subsample_vln_{args.shallow_data}_{args.num_samples}_sharedlim.png", dpi=300)
+
+
+
 
 # df.to_csv(savedir + f"{args.shallow_data}_{args.num_samples}.csv")
