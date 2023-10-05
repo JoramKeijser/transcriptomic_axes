@@ -6,8 +6,8 @@ based on single-cell transcriptomics and circuit modelling.
   <img width="800" src="./figures/tpc_fig0.png">
 </p>
 
-The actual analysis code is combined into a pipeline using [Snakemake](https://snakemake.readthedocs.io/en/stable/). This is done by defining rules (see `workflow/rules`),
-that form a directed acyclic graph (DAG) through which the data flows. Below is the DAG corresponding to the first supplementary figures from the paper. 
+The actual analysis code (see `workflow/scripts`) is combined into a pipeline using [Snakemake](https://snakemake.readthedocs.io/en/stable/). This is done by defining rules (see `workflow/rules`),
+that form a directed acyclic graph (DAG) through which the data flows. Below is shown the DAG of the first supplementary figures from the paper. 
 
 <p align="center">
   <img width="600" src="./figures/dags/fig1.png">
