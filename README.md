@@ -1,5 +1,6 @@
 # tpc_pipeline
-Comparative transcriptomics & network modelling to analyse potential differences in how the inhibitory neural activity from different species might vary with an animal's internal state (arousal, locomotion).  
+Analysis of how the inhibitory neural activity from different species might vary with an animal's internal state (arousal, locomotion), 
+based on single-cell transcriptomics and circuit modelling. 
 
 <p align="center">
   <img width="800" src="./figures/tpc_fig0.png">
@@ -64,7 +65,7 @@ In this case, the output from rule `all` will not be printed to the command line
 
 ## Acknowledgements
 
-Thanks to those who previously collected & published the scRNAseq data: 
+We are grateful to the people who previously collected & published the scRNAseq data: 
 * Bakken, Trygve E., et al. "Comparative cellular analysis of motor cortex in human, marmoset and mouse." Nature 598.7879 (2021): 111-119.
 * Bugeon, Stephane, et al. "A transcriptomic axis predicts state modulation of cortical interneurons." Nature 607.7918 (2022): 330-338.
 * Colquitt, Bradley M., et al. "Cellular transcriptomics reveals evolutionary identities of songbird vocal circuits." Science 371.6530 (2021): eabd9704.
@@ -72,4 +73,3 @@ Thanks to those who previously collected & published the scRNAseq data:
 * Tasic, Bosiljka, et al. "Shared and distinct transcriptomic cell types across neocortical areas." Nature 563.7729 (2018): 72-78.
 * Tosches, Maria Antonietta, et al. "Evolution of pallium, hippocampus, and cortical cell types revealed by single-cell transcriptomics in reptiles." Science 360.6391 (2018): 881-888.
 * Yao, Zizhen, et al. "A taxonomy of transcriptomic cell types across the isocortex and hippocampal formation." Cell 184.12 (2021): 3222-3241.
-
