@@ -1,8 +1,8 @@
 DATASETS = ["yao", "tasic", "tosches", "bakken", "colquitt"]
-PERMUTATIONS = 10000 
+PERMUTATIONS = 10000
 # Estimating null distribution of corr. between modulation and expression
 SAMPLES = 100
-# Estimating RNA count distribution by downsampling 
+# Estimating RNA count distribution by downsampling
 species = {
     "colquitt": "Zebra finch",
     "tosches": "Turtle",

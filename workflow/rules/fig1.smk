@@ -3,10 +3,12 @@ TRANSFORMS = ["log", "raw"]
 NSUBSETS = 1000
 NPERMUTATIONS = 1000
 
+onstart:
+    # Create directory to store log files of individual jobs
+    shell("mkdir -p log/jobs")
 
 def script_path(x):
     return f"../scripts/{x}"
-
 
 rule all:
     input:
