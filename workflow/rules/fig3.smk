@@ -8,7 +8,7 @@ areas = {
     "bakken": "Human M1",
     "hodge": "Human MTG",
     "colquitt": "Zebra Finch",
-    "tosches": "Turtle"
+    "tosches": "Turtle",
 }
 CONTROLS = ["complete", "72g", "human"]
 # TODO: bugeon_log -> bugeon
@@ -23,6 +23,7 @@ def genelist_from_label(wildcards):
     lists = {
         "complete": "results/gene_lists/shared_mouse_genes.txt",
         "72g": "data/bugeon/genes.names.txt",
+        "log": "data/bugeon/genes.names.txt",
         "bugeonabundance": "results/gene_lists/shared_mouse_genes.txt",
         "bugeonsst": "results/gene_lists/shared_mouse_genes.txt",
         "human": "results/gene_lists/shared_mouse_genes.txt",
@@ -35,6 +36,8 @@ def datasets_from_condition(wildcards):
         "complete": ["tasic", "yao"],
         "72g": ["tasic", "yao", "bugeon"],
         "human": ["bakken", "hodge"],
+        "bugeonabundance": ["tasic"],
+        "bugeonsst": ["tasic"],
     }
     return expand(
         expand(
@@ -44,11 +47,14 @@ def datasets_from_condition(wildcards):
         )
     )
 
+
 def areas_from_condition(wildcards):
     areas = {
         "complete": {"tasic": "VISp L1-6", "yao": "Ctx & Hpc"},
         "72g": {"tasic": "VISp L1-6", "bugeon": "VISp L1-3", "yao": "Ctx & Hpc"},
         "human": {"bakken": "Human M1", "hodge": "Human MTG"},
+        "bugeonsst": {"tasic": "VISp L1-6", "bugeon": "VISp L1-3"},
+        "bugeonabundance": {"tasic": "VISp L1-6", "bugeon": "VISp L1-3"},
     }
     return areas[wildcards.control]
 
@@ -68,7 +74,7 @@ rule all:
 
 rule cross_variance:
     input:
-        datasets_from_condition,        
+        datasets_from_condition,
     params:
         areas=areas_from_condition,
         reference=reference_from_condition,
@@ -83,10 +89,10 @@ rule cross_variance:
 
 rule principal_angles:
     input:
-        same_species = datasets_from_condition,
-        baseline_angles = "results/pc_comparison/principal_angles_complete.pickle", 
+        same_species=datasets_from_condition,
+        baseline_angles="results/pc_comparison/principal_angles_complete.pickle",
     params:
-        control= lambda wildcards: wildcards.control,
+        control=lambda wildcards: wildcards.control,
         areas=areas_from_condition,
         reference=reference_from_condition,
     resources:
@@ -122,3 +128,18 @@ rule intersect_mouse_genes:
         shared_genes="results/gene_lists/shared_mouse_genes.txt",
     script:
         script_path("fig2_intersect_genes.py")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

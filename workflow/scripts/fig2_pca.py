@@ -57,13 +57,47 @@ elif snakemake.params.control == "bugeonabundance":
     adata = ad.concat(list(adata_sub.values()))
     adata = data_tools.organize_subclass_labels(adata)
 elif snakemake.params.control == "bugeonsst":
+    # Select only upper layer Sst subtypes, as they are present in the Bugeon dataset
     bugeon = ad.read_h5ad(snakemake.input.bugeon)
-    sst_types = np.unique(bugeon[bugeon.obs["Subclass"] == "Sst"].obs["Subtype"])
-    idx = [
-        (subtype in sst_types) or (subclass != "Sst")
-        for (subclass, subtype) in zip(adata.obs["Subclass"], adata.obs["Subtype"])
+
+    def abundance(adata, relative=True):
+        # Compute relative abundance of each subclass
+        abundance = adata.obs["Subclass"].value_counts()
+        if relative:
+            return abundance / abundance.sum()
+        else:
+            return abundance
+
+    n_sst = abundance(adata, False)["Sst"]
+
+    # Split into Sst and non-Sst cells
+    sst_ix = adata.obs["Subclass"] == "Sst"
+    n_sst = np.sum(sst_ix)
+    adata_sst = adata[sst_ix]
+    adata_other = adata[~sst_ix]
+    # Select upper Sst types
+    upper_subtypes = [
+        subtype
+        for subtype in bugeon.obs["Subtype"].cat.categories
+        if subtype.startswith("Sst")
     ]
-    adata = adata[idx]
+    adata_sst = adata_sst[
+        [subtype in upper_subtypes for subtype in adata_sst.obs["Subtype"]]
+    ]
+    n_upper = adata_sst.shape[0]
+
+    def subsample(tasic_sst, tasic_other):
+        tasic_subsampled = tasic_sst[
+            [subtype in upper_subtypes for subtype in tasic_sst.obs["Subtype"]]
+        ]
+        for subclass in tasic_other.obs["Subclass"].cat.categories:
+            ix = tasic_other.obs["Subclass"] == subclass
+            t2 = sc.pp.subsample(tasic_other[ix], fraction=n_upper / n_sst, copy=True)
+            tasic_subsampled = ad.concat((tasic_subsampled, t2))
+        return tasic_subsampled
+
+    adata = subsample(adata_sst, adata_other)
+
 elif snakemake.params.control == "72g":
     bugeon = ad.read_h5ad(snakemake.input.bugeon)
     shared_genes = bugeon.var_names.intersection(adata.var_names)
