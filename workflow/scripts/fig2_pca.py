@@ -112,6 +112,7 @@ sc.pp.pca(adata, n_comps=constants.NUM_PCS)
 
 
 # Preserve the order
+order = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg", "Meis2"]
 adata.obs["Subclass"] = adata.obs["Subclass"].astype("category")
 missing_subclasses = [
     subclass

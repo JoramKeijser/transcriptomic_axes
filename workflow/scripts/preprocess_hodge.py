@@ -30,16 +30,26 @@ def main():
 
     adata = adata[adata.obs["class"] == "GABAergic"]
     # Subclass assignment
-    order = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg", "Meis2", "Gad1", "Pax6"]
+    order = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg", "Meis2"]
+
     def camelcase(name):
         return name[0].upper() + name[1:].lower()
 
     # Extract subclass from cluster name
-    # Exception: "Inh L1 Lamp5 NMMBR" from paper is coded in the data as SST
-    adata.obs["Subclass"] = [
-        "Lamp5" if cl == "Inh L1 SST NMBR" else camelcase(cl.split(" ")[2])
-        for cl in adata.obs["cluster"]
-    ]
+    # Exceptions: "Inh L1 Lamp5 NMMBR" from paper is coded in the data as SST
+    # Pax6 correspond to Lamp5 cells; Gad1 MC4R to VIP, GAD1 GLP1R to Pvalb
+    def subclass_from_cluster(cluster):
+        candidate = camelcase(cluster.split(" ")[2])
+        if cluster == "Inh L1 SST NMBR" or candidate == "Pax6":
+            return "Lamp5"
+        elif cluster == "Inh L5-6 GAD1 GLP1R":
+            return "Pvalb"
+        elif cluster == "Inh L1-2 GAD1 MC4R":
+            return "Lamp5"
+        else:
+            return candidate
+
+    adata.obs["Subclass"] = [subclass_from_cluster(cl) for cl in adata.obs["cluster"]]
     # Usual order with 2 additional human-specific types
     adata.obs["Subclass"] = adata.obs["Subclass"].astype("category")  #
     missing = [
@@ -50,10 +60,7 @@ def main():
     adata.obs["Subclass"] = adata.obs["Subclass"].cat.add_categories(missing)
     adata.obs["Subclass"] = adata.obs["Subclass"].cat.reorder_categories(order)
 
-   
-
     adata.write_h5ad(snakemake.output.anndata)  # TODO: also count introns
-
 
 
 if __name__ == "__main__":
