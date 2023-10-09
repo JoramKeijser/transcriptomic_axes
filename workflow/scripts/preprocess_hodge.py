@@ -29,45 +29,31 @@ def main():
     print(f"# counts: {depth}, # genes: {num_genes}")
 
     adata = adata[adata.obs["class"] == "GABAergic"]
-    # adata = data_tools.organize_subclass_labels(adata)
+    # Subclass assignment
+    order = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg", "Meis2", "Gad1", "Pax6"]
+    def camelcase(name):
+        return name[0].upper() + name[1:].lower()
+
+    # Extract subclass from cluster name
+    # Exception: "Inh L1 Lamp5 NMMBR" from paper is coded in the data as SST
+    adata.obs["Subclass"] = [
+        "Lamp5" if cl == "Inh L1 SST NMBR" else camelcase(cl.split(" ")[2])
+        for cl in adata.obs["cluster"]
+    ]
+    # Usual order with 2 additional human-specific types
+    adata.obs["Subclass"] = adata.obs["Subclass"].astype("category")  #
+    missing = [
+        subclass
+        for subclass in order
+        if subclass not in np.unique(adata.obs["Subclass"])
+    ]
+    adata.obs["Subclass"] = adata.obs["Subclass"].cat.add_categories(missing)
+    adata.obs["Subclass"] = adata.obs["Subclass"].cat.reorder_categories(order)
+
+   
+
     adata.write_h5ad(snakemake.output.anndata)  # TODO: also count introns
 
-    # TODO: add hodge to table overview and to pca (fig4)
-    """
-    print("Saving data as", savedir + "hodge.h5ad")
-    adata.write_h5ad(savedir + "hodge.h5ad")
-
-    print("PCA")
-    shared_genes = np.loadtxt(snakemake.input.shared_genes, dtype = str)
-    adata = adata[:, shared_genes]
-    sc.pp.normalize_total(adata, target_sum=constants.NORMALIZE_TARGET_SUM)
-    sc.pp.log1p(adata)
-    sc.pp.highly_variable_genes(adata, n_top_genes = constants.NUM_HVG_GENES)
-    sc.pp.pca(adata, constants.NUM_PCS)
-    # Consistent (but arbitrary) orientation along PC1,2 for visual comparison
-    adata = pca_tools.orient_axes(adata)
-    # Assign clusters to the right subclass based on PCA
-    print("Clustering")
-    sc.pp.neighbors(adata)
-    sc.tl.leiden(adata, resolution=.1)
-    sc.pl.pca(adata, color='leiden', legend_loc='on data', save="_hodge_leiden.png")
-    equiv = {"0":"Pvalb", "8":"Pvalb",
-         "2":"Sst", "7":"Sst",
-         "3": "Lamp5", "4": "Lamp5", "6":"Lamp5",
-         "1": "Vip", "5": "Vip"}
-    sc.pl.pca(adata, color='leiden', legend_loc='on data', save="_hodge_subclass.png")
-
-    # Plot it
-    fig, ax = plt.subplots()
-    sns.despine()
-    sc.pl.pca(adata, color='Subclass', ax=ax, frameon=False, annotate_var_explained=True, show=False,
-                title = 'Human MTG', save= "_hodge.png",  legend_loc='on data')
-
-    sc.pl.pca(adata, color='cluster', ax=ax, frameon=False, annotate_var_explained=True, show=False,
-                title = 'Human MTG', save= "_hodge.png",  legend_loc='on data')
-
-    print("Saving PCA'd data as", pca_savedir + "hodge.h5ad")
-    """
 
 
 if __name__ == "__main__":

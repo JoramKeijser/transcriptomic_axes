@@ -110,28 +110,6 @@ if "integrated" not in snakemake.params.control:
 sc.pp.highly_variable_genes(adata, n_top_genes=constants.NUM_HVG_GENES)
 sc.pp.pca(adata, n_comps=constants.NUM_PCS)
 
-order = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg", "Meis2", "Gad1", "Pax6"]
-if "hodge" in snakemake.input.raw_anndata:
-    # Still need to do Subclass assignment
-    def camelcase(name):
-        return name[0].upper() + name[1:].lower()
-
-    # Extract subclass from cluster name
-    # Exception: "Inh L1 Lamp5 NMMBR" from paper is coded in the data as SST
-    adata.obs["Subclass"] = [
-        "Lamp5" if cl == "Inh L1 SST NMBR" else camelcase(cl.split(" ")[2])
-        for cl in adata.obs["cluster"]
-    ]
-    # Usual order with 2 additional human-specific types
-    adata.obs["Subclass"] = adata.obs["Subclass"].astype("category")  #
-    missing = [
-        subclass
-        for subclass in order
-        if subclass not in np.unique(adata.obs["Subclass"])
-    ]
-    adata.obs["Subclass"] = adata.obs["Subclass"].cat.add_categories(missing)
-    adata.obs["Subclass"] = adata.obs["Subclass"].cat.reorder_categories(order)
-
 
 # Preserve the order
 adata.obs["Subclass"] = adata.obs["Subclass"].astype("category")
