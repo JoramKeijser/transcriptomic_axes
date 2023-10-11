@@ -29,6 +29,8 @@ rule all:
         ),
         # Also use hodge as reference for other human dataset
         "figures/figure4/sub_bakken_hodge_n100_p1000.png",
+        "figures/figure4/all_genes.svg",
+        "figures/figure4/pca_tasic_chrna4_bugeon_abundance.png",
 
 
 rule downsampling_schematic:
@@ -113,7 +115,17 @@ rule allgenes:
     resources:
         mem_mb=8000,
     output:
-        figure="figures/figure4/all_genes.png",
+        png_fig="figures/figure4/all_genes.png",
+        svg_fig="figures/figure4/all_genes.svg",
         significant_genes="results/gene_lists/significant_genes.txt",
     script:
         script_path("fig4_allgenes.py")
+
+
+rule receptor_viz:
+    input:
+        "results/anndata/tasic_bugeonabundance.h5ad",
+    output:
+        "figures/figure4/pca_tasic_chrna4_bugeon_abundance.png",
+    script:
+        script_path("fig4_pca_tasic_chrna4.py")

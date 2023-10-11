@@ -132,9 +132,10 @@ def main():
     plt.ylabel("correlation w/ \n state modulation")
     plt.xlabel("Genes (sorted)")
     plt.tight_layout()
-    plt.savefig(snakemake.output.figure, dpi=300)
+    plt.savefig(snakemake.output.png_fig, dpi=300)
+    plt.savefig(snakemake.output.svg_fig, dpi=300)
 
-    return 0
+    
 
 
 if __name__ == "__main__":
