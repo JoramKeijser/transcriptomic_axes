@@ -20,6 +20,21 @@ rule all:
     input:
         expand("data/anndata/{dataset}.h5ad", dataset=DATASETS),
         "results/gene_lists/shared_genes.txt",
+        "results/pandas/abundance.tex",
+
+rule count_classes:
+    resources:
+        mem_mb=LARGEMEM,
+    input:
+        expand("data/anndata/{dataset}.h5ad",
+        dataset=DATASETS)
+    params: 
+        names = DATASETS,
+    output:
+        csv="results/pandas/abundance.csv",
+        tex="results/pandas/abundance.tex",
+    script:
+        script_path("abundance.py")
 
 
 rule intersect_genes:
