@@ -48,6 +48,13 @@ rule all:
         ),
         expand("figures/figure2/predict_from_{dataset}.png", dataset=DATASETS),
 
+rule schematics:
+    output:
+        pc_sketch="figures/figure2/pcs_schematic.png",
+        pc_gradient="figures/figure2/pcs_gradient.png",
+    script:
+        script_path("fig2_schematics.py")
+
 
 rule integrate:
     input:
