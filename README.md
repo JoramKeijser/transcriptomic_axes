@@ -1,4 +1,4 @@
-# tpc_pipeline
+# Transcriptomic axes of GABAergic interneuron diversity
 Analysis of how the inhibitory neural activity from different species might vary with an animal's internal state (arousal, locomotion), 
 based on single-cell transcriptomics and circuit modelling. 
 
