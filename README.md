@@ -1,12 +1,14 @@
 # Transcriptomic axes of GABAergic interneuron diversity
 Analysis of how the inhibitory neural activity from different species might vary with an animal's internal state (arousal, locomotion), 
-based on single-cell transcriptomics and circuit modelling. 
+based on single-cell transcriptomics and circuit modelling. See the [preprint](https://doi.org/10.1101/2023.12.04.569849) for more information. 
+
+>Keijser, J., Hertäg, L., & Sprekeler, H. (2023). Transcriptomic correlates of state modulation in GABAergic interneurons: A cross-species analysis. bioRxiv, 2023-12.
 
 <p align="center">
   <img width="800" src="./figures/tpc_fig0.png">
 </p>
 
-The actual analysis code (see `workflow/scripts`) is combined into a pipeline using [Snakemake](https://snakemake.readthedocs.io/en/stable/). This is done by defining rules (see `workflow/rules`),
+The analysis code (see `workflow/scripts`) is combined into a pipeline using [Snakemake](https://snakemake.readthedocs.io/en/stable/). This is done by defining rules (see `workflow/rules`),
 that form a directed acyclic graph (DAG) through which the data flows. Below is shown the DAG of the first supplementary figures from the paper. 
 
 <p align="center">
