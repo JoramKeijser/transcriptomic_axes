@@ -2,7 +2,8 @@
 Analysis of how the inhibitory neural activity from different species might vary with an animal's internal state (arousal, locomotion), 
 based on single-cell transcriptomics and circuit modelling. See the [preprint](https://doi.org/10.1101/2023.12.04.569849) for more information. 
 
->Keijser, J., Hertäg, L., & Sprekeler, H. (2023). Transcriptomic correlates of state modulation in GABAergic interneurons: A cross-species analysis. bioRxiv, 2023-12.
+>Keijser, J., Hertäg, L., & Sprekeler, H. (2023). Transcriptomic correlates of state modulation in GABAergic interneurons:
+>A cross-species analysis. bioRxiv, 2023-12.
 
 <p align="center">
   <img width="800" src="./figures/tpc_fig0.png">
@@ -50,9 +51,9 @@ To generate all results (figures and data output) corresponding to, say, figure 
 snakemake -s workflow/rules/fig1.smk --cores
 ```
 
-To generate only a particular figure, run:
+To generate only a particular panel, run:
 ```
-snakemake -s workflow/rules/fig1.smk --cores figures/figure1/pca_modulation_log.png.png
+snakemake -s workflow/rules/fig1.smk --cores figures/figure1/pca_modulation_log.png
 ```
 
 These commands will naturally run on your local machine. To really benefit from Snakemake's power to parallelize things
