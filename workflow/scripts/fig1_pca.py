@@ -34,16 +34,22 @@ bugeon.obs["Subclass"] = (
 )
 
 # log-normalized and do PCA
-sc.pp.normalize_total(bugeon, target_sum=constants.NORMALIZE_TARGET_SUM)
-if snakemake.params.transform == "raw":
+if snakemake.params.transform == "scaled":
     print("Don't apply log-transform but use normalized counts")
+    sc.pp.normalize_total(bugeon, target_sum=constants.NORMALIZE_TARGET_SUM)
     sc.pp.pca(bugeon, n_comps=71)
     bugeon.obsm["X_pca"][:, 1] *= -1
     bugeon.varm["PCs"][:, 1] *= -1
 elif snakemake.params.transform == "log":
     print("Apply log-transform")
+    sc.pp.normalize_total(bugeon, target_sum=constants.NORMALIZE_TARGET_SUM)
     sc.pp.log1p(bugeon)
     sc.pp.pca(bugeon, n_comps=71)
+elif snakemake.params.transform == 'raw':
+    print("Don't scale, use data as-is")
+    sc.pp.pca(bugeon, n_comps=71)
+    bugeon.obsm["X_pca"][:, 0] *= -1
+    bugeon.varm["PCs"][:, 0] *= -1
 else:
     raise NotImplementedError(f"transform {snakemake.params.transform} not implemented")
 

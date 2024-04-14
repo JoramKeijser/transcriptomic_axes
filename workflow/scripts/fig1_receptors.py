@@ -38,20 +38,23 @@ by_subtype["Subclass"] = by_subtype["Subclass"].cat.reorder_categories(subclass_
 by_subtype.index = by_subtype["Subtype"]
 # Load Tasic dataset for ACh receptor expression
 tasic = ad.read_h5ad(snakemake.input.tasic)
-# Consistent coding of subtype names: dash instead of space
-# tasic.obs['Subtype'] = [subtype.replace(" ", "-") for subtype in tasic.obs['subtype']]
-# tasic.obs['Subtype'] = tasic.obs['Subtype'].astype("category")
 # Select bugeon subtypes
 tasic = tasic[tasic.obs["Subtype"].isin(by_subtype["Subtype"])]
-sc.pp.normalize_total(tasic, target_sum=1e4)  # counts -> CP10K
 
 # Add ACh receptor genes to obs data frame for convenient plotting
 receptors = ["Chrm3", "Chrm4", "Chrna4", "Chrna5"]
 for receptor in receptors:
     if snakemake.params.transform == "log":
+        sc.pp.normalize_total(tasic, target_sum=1e4)  # counts -> CP10K
         tasic.obs[receptor] = np.log1p(np.array(tasic[:, receptor].X[:, 0]))
-    else:
+    elif snakemake.params.transform == "scaled":
+        sc.pp.normalize_total(tasic, target_sum=1e4)  # counts -> CP10K
         tasic.obs[receptor] = np.array(tasic[:, receptor].X[:, 0])
+    elif snakemake.params.transform == "raw":
+        tasic.obs[receptor] = np.array(tasic[:, receptor].X[:, 0])
+    else:
+        raise NotImplementedError(f"transform {snakemake.params.transform} not implemented")
+
 tasic_by_subtype = tasic.obs[receptors + ["Subtype"]].groupby("Subtype").mean()
 by_subtype = pd.concat([by_subtype, tasic_by_subtype], axis=1, ignore_index=False)
 
@@ -82,8 +85,10 @@ for i, receptor in enumerate(receptors):
         ax[i].set_yticklabels([])
     if snakemake.params.transform == "log":
         ax[i].set_xlabel(f"{receptor} (log CP10K)", fontsize=FONTSIZE)
-    elif snakemake.params.transform == "raw":
+    elif snakemake.params.transform == "scaled":
         ax[i].set_xlabel(f"{receptor} (CP10K)", fontsize=FONTSIZE)
+    elif snakemake.params.transform == "raw":
+        ax[i].set_xlabel(f"{receptor} (counts)", fontsize=FONTSIZE)
     # Show fit (train data)
     x = by_subtype[receptor].to_numpy()[:, None]
     y = by_subtype[MODULATION].to_numpy()

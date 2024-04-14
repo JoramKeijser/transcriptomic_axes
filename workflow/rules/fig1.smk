@@ -1,5 +1,9 @@
 SUBCLASSES = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
-TRANSFORMS = ["log", "raw"]
+# Preprocessing:
+# log: normalize count p/gene + log scale,
+# scaled: normalize total counts
+# counts: data as-is
+TRANSFORMS = ["log", "scaled", "raw"]
 NSUBSETS = 1000
 NPERMUTATIONS = 1000
 
@@ -78,7 +82,6 @@ rule receptors:
         script_path("fig1_receptors.py")
 
 
-# TODO: add receptors_supp
 rule all_receptors:
     input:
         by_subtype="results/pandas/bugeon_by_subtype_log.csv",
