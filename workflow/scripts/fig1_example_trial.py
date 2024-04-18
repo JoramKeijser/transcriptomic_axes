@@ -90,7 +90,7 @@ X = ec_activity.T  # cells x time
 X_z = (X - X.mean(1, keepdims=True)) / X.std(1, keepdims=True)
 X_smooth = gaussian_filter1d(X_z, sigma=2, axis=1)
 
-pca = PCA(n_components=50)
+pca = PCA(n_components=1)
 pca.fit(ec_activity)  # time x cells
 ec_sort = np.argsort(pca.components_[0])
 
