@@ -12,7 +12,7 @@ for name, file in zip(names, snakemake.input):
     print(file)
     adata = ad.read_h5ad(file)
     counts = adata.obs['Subclass'].value_counts()
-    # Add 0 counts 
+    # Add 0 counts
     counts = counts.reindex(subclass_order, fill_value=0)
     percentages = counts / counts.sum() * 100
     df[name] = percentages
@@ -22,6 +22,3 @@ for name, file in zip(names, snakemake.input):
 df.to_csv(snakemake.output.csv, index=True)
 df.to_latex(snakemake.output.tex, index=True, float_format="%.1f")
 print(df.round(2))
-
-
-

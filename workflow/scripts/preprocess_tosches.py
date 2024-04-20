@@ -1,8 +1,7 @@
 """
-Put raw Tosches data into anndata 
+Put raw Tosches data into anndata
 """
 import numpy as np
-import seaborn as sns
 import pandas as pd
 import anndata as ad
 from src import data_tools
@@ -22,20 +21,20 @@ def main():
     # Mouse gene names
     adata.var_names = [gene[0] + gene[1:].lower() for gene in adata.var_names]
     # Map to putative mammalian homologues (Tosches Fig 5)
-    map = {}
+    naming_map = {}
     for cluster in range(1, 7):
-        map[f"i0{cluster}"] = "Meis2"
+        naming_map[f"i0{cluster}"] = "Meis2"
     for cluster in range(7, 11):
         if cluster < 10:
-            map[f"i0{cluster}"] = "Sst"
+            naming_map[f"i0{cluster}"] = "Sst"
         else:
-            map[f"i{cluster}"] = "Sst"
+            naming_map[f"i{cluster}"] = "Sst"
     for cluster in range(11, 14):
-        map[f"i{cluster}"] = "Pvalb"
+        naming_map[f"i{cluster}"] = "Pvalb"
     for cluster in range(14, 19):
-        map[f"i{cluster}"] = "Vip"
+        naming_map[f"i{cluster}"] = "Vip"
     # Consistent order
-    adata.obs["Subclass"] = adata.obs["clusters"].map(map)
+    adata.obs["Subclass"] = adata.obs["clusters"].map(naming_map)
     adata = data_tools.organize_subclass_labels(adata)
 
     print("Save to ", snakemake.output.anndata)

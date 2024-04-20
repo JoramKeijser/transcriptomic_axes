@@ -10,11 +10,8 @@ Description of each dataset
 import numpy as np
 import pandas as pd
 import anndata as ad
-import os
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-sns.set_palette("colorblind")
 
 
 adata = ad.read_h5ad(snakemake.input.anndata)

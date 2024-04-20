@@ -1,13 +1,10 @@
-# Combine partitions
-import numpy as np
+"""
+Contruct all GABAergic cells from the yao datasets
+using the indidual subsets (see preprocess_yao_partition.py)
+"""
 import anndata as ad
-import pandas as pd
-import os
-import re
-import argparse
 from src import data_tools
 
-# TODO: all genes?
 files = snakemake.input.files
 adata = ad.read_h5ad(files.pop(), backed="r")
 for i, file in enumerate(files):
@@ -21,5 +18,3 @@ for i, file in enumerate(files):
 adata = data_tools.organize_subclass_labels(adata)
 print("Final:", adata.shape)
 adata.write_h5ad(snakemake.output.anndata)
-
-# Check that we didn't miss any interneurons TODO

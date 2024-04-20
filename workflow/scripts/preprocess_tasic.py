@@ -2,9 +2,6 @@
 Extract raw Tasic data and put it into an annotated data frame
 """
 import numpy as np
-import os
-import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
 import anndata as ad
 import scanpy as sc

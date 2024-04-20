@@ -1,8 +1,6 @@
 """
 Extract raw Bakken data and put it into an annotated data frame
 """
-import numpy as np
-import seaborn as sns
 import pandas as pd
 import anndata as ad
 from src import data_tools

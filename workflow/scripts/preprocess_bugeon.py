@@ -1,5 +1,5 @@
 """
-Extract the transcriptomic and activity data 
+Extract the transcriptomic and activity data
 from the raw Bugeon et al. files downloaded from
 https://doi.org/10.6084/m9.figshare.19448531.v1
 Save as annotated data frame to /results/
@@ -15,8 +15,6 @@ sns.set_context("poster")
 
 
 base_dir = snakemake.input.data_dir + "/"
-print(base_dir)
-# "./data/raw/bugeon/"
 subdirs = [d for d in os.listdir(base_dir) if os.path.isdir(base_dir + d)]
 
 # Dictionaries to hold cell-specific data, indexed by cell (unique identifier)
@@ -97,9 +95,9 @@ for subdir in subdirs:
                         all_sync[uid].fill(np.nan)
 
 # Dict to array
-running_pct = np.array([value for value in all_running_pct.values()])
-sync_pct = np.array([value for value in all_sync_pct.values()])
-desync_pct = np.array([value for value in all_desync_pct.values()])
+running_pct = np.array(list(all_running_pct.values()))
+sync_pct = np.array(list(all_sync_pct.values()))
+desync_pct = np.array(list(all_desync_pct.values()))
 print(
     "% of time in running, stat. sync, and stat. desync state: \
       {running_pct.mean():1.0f}, {sync_pct.mean():1.0f}, {desync_pct.mean():1.0f}"
@@ -110,8 +108,8 @@ print(f"Found {n_cells} GABAergic cells")
 assert np.allclose(sync_pct + running_pct + desync_pct, 100)
 
 # Compute average activity during each state
-uids = np.array([uid for uid in all_running_pct.keys()])
-ttypes = np.array([ttype for ttype in all_ttypes.values()])
+uids = np.array(list(all_running_pct.keys()))
+ttypes = np.array(list(all_ttypes.values()))
 avg_running = np.array([activity.mean() for activity in all_running.values()])
 avg_desync = np.array([activity.mean() for activity in all_desync.values()])
 avg_sync = np.array([activity.mean() for activity in all_sync.values()])
@@ -156,7 +154,7 @@ df["Subclass"] = df["Subclass"].astype("category")
 
 
 #  RNA counts (already normalized) as data frame
-counts = np.array([count for count in all_counts.values()])
+counts = np.array(list(all_counts.values()))
 gene_names = np.loadtxt(base_dir + "genes.names.txt", dtype=str)
 counts = pd.DataFrame(counts, columns=gene_names)
 counts.set_index(uids, inplace=True)
@@ -178,9 +176,9 @@ subclass_order = ["Pvalb", "Sst", "Lamp5", "Vip", "Sncg"]
 bugeon.obs["Subclass"] = bugeon.obs["Subclass"].cat.reorder_categories(subclass_order)
 
 # Npy is missing (NaN) for some cells
-print(
-    f"{np.sum((np.isnan(bugeon.X)>0).sum(1)>0)} cells with missing counts in {np.sum((np.isnan(bugeon.X)>0).sum(0)>0)} genes"
-)
+missing_cells = np.sum((np.isnan(bugeon.X) > 0).sum(1) > 0)
+missing_genes = np.sum((np.isnan(bugeon.X) > 0).sum(0) > 0)
+print(f"{missing_cells} cells with missing counts in {missing_genes} genes")
 gene_idx = np.where((np.isnan(bugeon.X) > 0).sum(0) > 0)[0]
 print(f"Genes with missing counts: {np.array(bugeon.var_names[gene_idx])}")
 # Replace by subtype-specific median

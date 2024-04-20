@@ -1,3 +1,7 @@
+"""
+Preprocess (subset GABAergic cells etc) a small subset
+of the yao data to minimize required RAM
+"""
 import pandas as pd
 import anndata as ad
 import numpy as np
@@ -29,7 +33,6 @@ f = h5py.File(snakemake.input.counts, "r")
 gene_names = np.array(f["data"]["gene"], dtype=str)
 sample_names = np.array(f["data"]["samples"], dtype=str)
 # Load actual counts
-f = h5py.File(snakemake.input.counts, "r")
 counts = f["data"]["counts"][:, START:END]
 counts = counts.T
 counts = pd.DataFrame(
