@@ -22,14 +22,14 @@ rule all:
         "results/gene_lists/shared_genes.txt",
         "results/pandas/abundance.tex",
 
+
 rule count_classes:
     resources:
         mem_mb=LARGEMEM,
     input:
-        expand("data/anndata/{dataset}.h5ad",
-        dataset=DATASETS)
-    params: 
-        names = DATASETS,
+        expand("data/anndata/{dataset}.h5ad", dataset=DATASETS),
+    params:
+        names=DATASETS,
     output:
         csv="results/pandas/abundance.csv",
         tex="results/pandas/abundance.tex",
@@ -39,11 +39,12 @@ rule count_classes:
 
 rule intersect_genes:
     input:
+        "results/gene_lists/orthologs.txt",
         expand("results/gene_lists/genes_{dataset}.csv", dataset=PRIMARY),
     output:
         shared_genes="results/gene_lists/shared_genes.txt",
     script:
-        script_path("fig2_intersect_genes.py")
+        script_path("intersect_genes.py")
 
 
 rule datasets:
@@ -57,7 +58,7 @@ rule datasets:
     params:
         dataset=lambda wildcards: wildcards.dataset,
     script:
-        script_path("fig2_dataset_stats.py")
+        script_path("dataset_stats.py")
 
 
 rule pp_yao:  # Merge partitions. Could use rows per job here
