@@ -1,4 +1,6 @@
-# Predict state modulation from PCs of other datasets
+"""
+Predict state modulation from PCs of other datasets
+"""
 
 import numpy as np
 import pandas as pd
@@ -9,7 +11,6 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import pearsonr
-
 from src import constants, pca_tools, regression_tools
 
 sns.set_palette("colorblind")

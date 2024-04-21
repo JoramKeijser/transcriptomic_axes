@@ -1,4 +1,6 @@
-# Mouse variance explained by other datasets
+"""
+Mouse variance explained by other datasets
+"""
 import pickle
 import numpy as np
 import anndata as ad
@@ -32,7 +34,6 @@ remaining_datasets = [name for name in list(datasets.keys()) if name != referenc
 print(remaining_datasets)
 
 # PCA on reference
-# TODO: NUM_PCs and HVGs to config file
 if "highly_variable" not in datasets[reference].obs.columns:
     if "log1p" in datasets[reference].uns.keys():
         datasets[reference].uns["log1p"]["base"] = None  # anndata bug
@@ -61,7 +62,6 @@ for name, dataset in datasets.items():
             datasets[reference], datasets[name], pca
         )
         print(f"{name}: {cross_variance[name][0]*100:.1f}% variance of mouse tPC1")
-        # TODO: log
 
 variance = np.diag(pca.components_[:10] @ C @ pca.components_[:10].T) / np.trace(C)
 variance /= variance[0]
@@ -85,7 +85,7 @@ plt.hlines(
 print(f"tPC1-10: {variance[:10].sum()*100:0.1f}% of reference tPC1")
 plt.bar(x, variance[:5], label=areas[snakemake.params.reference])
 
-for i, name in enumerate(remaining_datasets):  # TODO: don't hard code
+for i, name in enumerate(remaining_datasets):
     plt.bar(x + 0.8 * (i + 1), cross_variance[name][:5], label=areas[name])
     print(
         f"{name} tPC1-10: {cross_variance[name][:10].sum()*100:0.1f}% of reference tPC1"

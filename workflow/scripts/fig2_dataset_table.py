@@ -7,14 +7,8 @@ Description of each dataset
 * sequencing depth
 * # genes
 """
-import numpy as np
 import pandas as pd
-import anndata as ad
-import os
-import matplotlib.pyplot as plt
 import seaborn as sns
-
-sns.set_palette("colorblind")
 
 
 def main():

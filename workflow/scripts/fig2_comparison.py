@@ -1,12 +1,10 @@
-# Directly compare principal angles & var explained
+"""
+Directly compare principal angles & var explained
+"""
+import pickle
 import numpy as np
-import os
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pandas as pd
-import anndata as ad
-import scanpy as sc
-import pickle
 
 sns.set_context("poster")
 

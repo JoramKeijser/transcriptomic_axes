@@ -45,7 +45,7 @@ elif snakemake.params.transform == "log":
     sc.pp.normalize_total(bugeon, target_sum=constants.NORMALIZE_TARGET_SUM)
     sc.pp.log1p(bugeon)
     sc.pp.pca(bugeon, n_comps=71)
-elif snakemake.params.transform == 'raw':
+elif snakemake.params.transform == "raw":
     print("Don't scale, use data as-is")
     sc.pp.pca(bugeon, n_comps=71)
     bugeon.obsm["X_pca"][:, 0] *= -1

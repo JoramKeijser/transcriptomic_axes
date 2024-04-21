@@ -1,11 +1,10 @@
-# Mouse variance explained by other datasets
+"""
+Mouse variance explained by other datasets
+"""
+import pickle
 import numpy as np
-import pandas as pd
 import anndata as ad
 import scanpy as sc
-import os
-import pickle
-import argparse
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -25,8 +24,7 @@ def main():
         "tasic": "Mouse",
         "bakken": "Human",
     }
-    reference = "tasic"  # TODO: move to snakefile or config
-
+    reference = "tasic"
     datasets = {}
     print("Loading data")
     for dataset in snakemake.input:
@@ -35,7 +33,6 @@ def main():
         datasets[name] = ad.read_h5ad(dataset)
 
     # PCA on reference
-    # TODO: NUM_PCs and HVGs to config file
     hvgs = datasets[reference].var.highly_variable
     datasets[reference] = datasets[reference][:, hvgs]
     pca = PCA(n_components=constants.NUM_PCS).fit(datasets[reference].X)
@@ -54,13 +51,12 @@ def main():
                 datasets[reference], datasets[name], pca
             )
             print(f"{name}: {cross_variance[name][0]*100:.1f}% variance of mouse tPC1")
-            # TODO: log
 
     variance = np.diag(pca.components_[:10] @ C @ pca.components_[:10].T) / np.trace(C)
     variance /= variance[0]
 
     # Plot
-    x = np.arange(5) * 4  # TODO: don't hardcode
+    x = np.arange(5) * 4
     # Chance level: random components
     rng = np.random.RandomState(0)
     random_components = rng.normal(size=(10, C.shape[0]))

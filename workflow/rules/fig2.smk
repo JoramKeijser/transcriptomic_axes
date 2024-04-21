@@ -48,6 +48,7 @@ rule all:
         ),
         expand("figures/figure2/predict_from_{dataset}.png", dataset=DATASETS),
 
+
 rule schematics:
     output:
         pc_sketch="figures/figure2/pcs_schematic.png",

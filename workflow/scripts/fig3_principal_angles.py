@@ -1,3 +1,6 @@
+"""
+Compute and visualize principal angles
+"""
 import pickle
 import numpy as np
 import anndata as ad

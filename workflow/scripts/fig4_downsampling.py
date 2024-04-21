@@ -1,12 +1,10 @@
-## Test effect of varying sequencing depth
+"""
+Test effect of varying sequencing depth
+"""
 import numpy as np
-import os
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import seaborn as sns
 import pandas as pd
-import argparse
-import pickle
 import anndata as ad
 import scanpy as sc
 

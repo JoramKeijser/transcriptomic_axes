@@ -11,13 +11,13 @@ df = pd.DataFrame(columns=names)
 for name, file in zip(names, snakemake.input):
     print(file)
     adata = ad.read_h5ad(file)
-    counts = adata.obs['Subclass'].value_counts()
+    counts = adata.obs["Subclass"].value_counts()
     # Add 0 counts
     counts = counts.reindex(subclass_order, fill_value=0)
     percentages = counts / counts.sum() * 100
     df[name] = percentages
 
-#df = df.reindex(subclass_order)
+# df = df.reindex(subclass_order)
 # Save as csv and tex
 df.to_csv(snakemake.output.csv, index=True)
 df.to_latex(snakemake.output.tex, index=True, float_format="%.1f")

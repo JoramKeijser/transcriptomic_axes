@@ -1,11 +1,9 @@
-# To do: fix Colquitt order. Missing subclasses
-
+"""
+Apply PCA to single datasets
+"""
 import numpy as np
-import pandas as pd
-import argparse
 import anndata as ad
 import scanpy as sc
-import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 from src import constants, pca_tools, data_tools
@@ -29,11 +27,10 @@ def subsample(adata, subclasses=["Pvalb", "Sst", "Vip"]):
     return adata_sub
 
 
-#    title = species[savename]
 shared_genes = np.loadtxt(snakemake.input.shared_genes, dtype=str)
 adata = ad.read_h5ad(snakemake.input.raw_anndata)
 adata = adata[:, np.sort(adata.var_names.intersection(shared_genes))]
-# adata = adata[:, shared_genes] # restrict to shared genes
+
 if snakemake.params.control == "meis2":
     n = np.sum(adata.obs["Subclass"] == "Meis2")
     print(f"Exclude {n} Meis2 cells")
@@ -65,8 +62,7 @@ elif snakemake.params.control == "bugeonsst":
         abundance = adata.obs["Subclass"].value_counts()
         if relative:
             return abundance / abundance.sum()
-        else:
-            return abundance
+        return abundance
 
     n_sst = abundance(adata, False)["Sst"]
 

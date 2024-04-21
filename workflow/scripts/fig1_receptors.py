@@ -53,7 +53,9 @@ for receptor in receptors:
     elif snakemake.params.transform == "raw":
         tasic.obs[receptor] = np.array(tasic[:, receptor].X[:, 0])
     else:
-        raise NotImplementedError(f"transform {snakemake.params.transform} not implemented")
+        raise NotImplementedError(
+            f"transform {snakemake.params.transform} not implemented"
+        )
 
 tasic_by_subtype = tasic.obs[receptors + ["Subtype"]].groupby("Subtype").mean()
 by_subtype = pd.concat([by_subtype, tasic_by_subtype], axis=1, ignore_index=False)

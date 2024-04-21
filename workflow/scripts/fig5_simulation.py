@@ -59,7 +59,7 @@ rates_dict["turtle"] = simulate_variable_input(params, x_base, x_mod, x_var, dt=
 # Plot em
 FONTSIZE = 15
 ALPHA = 0.04
-color = 'gray'
+color = "gray"
 for species, figname in snakemake.output.items():
     rates = rates_dict[species]
     sns.set_palette("colorblind")
@@ -69,14 +69,22 @@ for species, figname in snakemake.output.items():
             2 * (x_var[T0:, i] - x_var[T0:, i].mean(0)), alpha=0.7, lw=2, c=palette[i]
         )
         if species == "turtle":
-            ax[1].fill_between(np.arange(0, Tm0)- T0, 0, 4, alpha=ALPHA, color=color)
-            ax[2].fill_between(np.arange(0, Tm0)- T0, 1, 12, alpha=ALPHA, color=color)
-            ax[1].fill_between(np.arange(Tmend,TIMESTEPS)- T0, 0, 4, alpha=ALPHA, color=color)
-            ax[2].fill_between(np.arange(Tmend,TIMESTEPS)- T0, 1, 12, alpha=ALPHA, color=color)
-        else:    
-            ax[1].fill_between(np.arange(Tm0, Tmend)- T0, 0, 3.9, alpha=ALPHA, color=color)
-            ax[2].fill_between(np.arange(Tm0, Tmend)- T0, 1, 12, alpha=ALPHA, color=color)
-            #Tm0:Tmend
+            ax[1].fill_between(np.arange(0, Tm0) - T0, 0, 4, alpha=ALPHA, color=color)
+            ax[2].fill_between(np.arange(0, Tm0) - T0, 1, 12, alpha=ALPHA, color=color)
+            ax[1].fill_between(
+                np.arange(Tmend, TIMESTEPS) - T0, 0, 4, alpha=ALPHA, color=color
+            )
+            ax[2].fill_between(
+                np.arange(Tmend, TIMESTEPS) - T0, 1, 12, alpha=ALPHA, color=color
+            )
+        else:
+            ax[1].fill_between(
+                np.arange(Tm0, Tmend) - T0, 0, 3.9, alpha=ALPHA, color=color
+            )
+            ax[2].fill_between(
+                np.arange(Tm0, Tmend) - T0, 1, 12, alpha=ALPHA, color=color
+            )
+            # Tm0:Tmend
 
     ax[0].set_ylabel("Inputs (a.u.)", fontsize=FONTSIZE)
     ax[1].plot(rates[T0:, 0], lw=2, c=palette[0])
