@@ -5,6 +5,7 @@ DATASETS = ["bugeon", "bakken", "tosches", "tasic", "colquitt", "yao", "hodge"]
 onstart:
     # Create directory to store log files of individual jobs
     shell("mkdir -p log/jobs")
+    shell("mkdir data/")
     # Need internet to download the files
     shell("export https_proxy=http://frontend01:3128/")
     shell("export http_proxy=http://frontend01:3128/")
