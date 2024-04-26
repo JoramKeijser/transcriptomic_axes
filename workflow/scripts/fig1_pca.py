@@ -24,7 +24,7 @@ sns.set_context("poster")
 # Load data
 bugeon = ad.read_h5ad(snakemake.input.transcriptomics)
 activity = pd.read_csv(snakemake.input.activity, index_col=0)
-print(bugeon.shape, activity.shape)
+activity = activity.sort_index() # consistent ordering
 assert np.alltrue(np.array(bugeon.obs["Subclass"]) == np.array(activity["Subclass"]))
 assert np.alltrue(np.array(bugeon.obs["Subtype"]) == np.array(activity["Subtype"]))
 bugeon.obs = activity  # simply overwrite with more comprehensive metadata

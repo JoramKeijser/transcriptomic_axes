@@ -191,4 +191,6 @@ for gene in bugeon.var_names[gene_idx]:
             )
 
 print(f"Save anndata to {snakemake.output.anndata}")
+# sort by uid
+bugeon = bugeon[np.argsort(np.array(bugeon.obs_names, dtype=int))]
 bugeon.write_h5ad(snakemake.output.anndata)

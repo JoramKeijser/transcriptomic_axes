@@ -23,7 +23,6 @@ rule all:
         "figures/figure1/state_modulation.png",
         "figures/figure1/example_trial.png",
         "data/anndata/bugeon.h5ad",
-        "results/pandas/activity.h5ad",
         expand("results/anndata/bugeon_{transform}.h5ad", transform=TRANSFORMS),
         expand("figures/figure1/receptors_{transform}.png", transform=TRANSFORMS),
         "figures/figure1/regression_All.png",

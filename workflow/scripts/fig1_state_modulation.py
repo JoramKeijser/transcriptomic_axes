@@ -42,6 +42,8 @@ var_df["uid"] = var_df.index
 var_df = var_df.drop_duplicates("uid", keep="first")
 var_df.drop("uid", inplace=True, axis=1)
 var_df.index = var_df.index.astype("str")
+var_df = var_df.sort_index()
+
 # Drop cells that belong to t types with too few counts
 few_counts = var_df.value_counts("Subtype")[
     np.where(var_df.value_counts("Subtype") < 3)[0]
