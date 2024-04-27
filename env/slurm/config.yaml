@@ -10,7 +10,7 @@ cluster: >-
     --time {resources.time}
     -o log/jobs/{rule}_{wildcards}_%j.out
     -e log/jobs/{rule}_{wildcards}_%j.err
-    --partition "standard"
+    --partition "TestAndBuild" 
 default-resources:
     - threads=1
     - mem_mb=4000
