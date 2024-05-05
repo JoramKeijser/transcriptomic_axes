@@ -10,7 +10,7 @@ from downloading the raw data. See the [preprint](https://doi.org/10.1101/2023.1
   <img width="800" src="./figures/tpc_fig0.png">
 </p>
 
-The analysis code (see `workflow/scripts`) is combined into a pipeline using [Snakemake](https://snakemake.readthedocs.io/en/stable/). This is done through input/output rules (see `workflow/rules`), which form a directed acyclic graph (DAG) through which the data flows. The figure shows the DAG of the first supplementary figures.
+The analysis code is combined into a pipeline using [Snakemake](https://snakemake.readthedocs.io/en/stable/). This is done through input/output rules, which form a directed acyclic graph (DAG) through which the data flows. The figure shows the DAG of the first supplementary figures.
 
 <p align="center">
   <img width="600" src="./figures/dags/fig1.png">
@@ -19,6 +19,23 @@ The analysis code (see `workflow/scripts`) is combined into a pipeline using [Sn
 After installation, this figure can be recreated by running
 ```
 snakemake -s workflow/rules/fig1.smk -f --dag | dot -Tpng -Gdpi=300 > figures/dags/fig1.png
+```
+## Organization
+
+The repository is organized as follows:
+```
+├── data: raw data, will be created by running the pipeline
+├── env: Snakemake configuration file(s) for running on a computing cluster
+├── figures: will be created when running the pipeline
+├── log: will be created when running the pipeline on a cluster
+├── profile: Snakemake configuration file(s) for running locally
+├── renv: records the R environment
+├── results: will contain output data after running the pipeline
+├── src: source code
+├── src.egg-info: project package
+├── workflow
+  ├── rules: Snakemake rules defining data flow
+  └── scripts: Python/R/Bash scripts 
 ```
 
 ## Installation
