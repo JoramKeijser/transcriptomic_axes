@@ -30,7 +30,6 @@ rule all:
         # Also use hodge as reference for other human dataset
         "figures/figure4/sub_bakken_hodge_n100_p1000.png",
         "figures/figure4/all_genes.svg",
-        #"figures/figure4/pca_tasic_chrna4_bugeon_abundance.png",
 
 
 rule downsampling_schematic:
