@@ -11,11 +11,10 @@ areas = {
     "tosches": "Turtle",
 }
 CONTROLS = ["complete", "72g", "human"]
-DATASETS = ['tasic', 'yao', 'bugeon', 'hodge', 'bakken']
+DATASETS = ["tasic", "yao", "bugeon", "hodge", "bakken"]
 # TODO: bugeon_log -> bugeon
 MEM = 20000
 LARGEMEM = 240000
-
 
 
 def script_path(x):
@@ -24,12 +23,12 @@ def script_path(x):
 
 def genelist_from_label(wildcards):
     lists = {
-        "complete": "results/gene_lists/shared_mammal_genes.txt",
+        "complete": "results/gene_lists/shared_mouse_genes.txt",
         "72g": "data/bugeon/genes.names.txt",
         "log": "data/bugeon/genes.names.txt",
-        "bugeonabundance": "results/gene_lists/shared_mammal_genes.txt",
-        "bugeonsst": "results/gene_lists/shared_mammal_genes.txt",
-        "human": "results/gene_lists/shared_mammal_genes.txt",
+        "bugeonabundance": "results/gene_lists/shared_mouse_genes.txt",
+        "bugeonsst": "results/gene_lists/shared_mouse_genes.txt",
+        "human": "results/gene_lists/shared_human_genes.txt",
     }
     return lists[wildcards.control]
 
@@ -71,7 +70,8 @@ def reference_from_condition(wildcards):
 
 rule all:
     input:
-        "results/gene_lists/shared_mammal_genes.txt",
+        "results/gene_lists/shared_mouse_genes.txt",
+        "results/gene_lists/shared_human_genes.txt",
         expand("figures/figure3/cross_variance_{control}.png", control=CONTROLS),
         expand("figures/figure3/principal_angles_{control}.png", control=CONTROLS),
 
@@ -124,6 +124,7 @@ rule pca:
     script:
         script_path("fig2_pca.py")
 
+
 rule get_genes:
     input:
         adata="data/anndata/{dataset}.h5ad",
@@ -135,11 +136,24 @@ rule get_genes:
         script_path("save_genes.py")
 
 
-rule intersect_mouse_genes:
+# Use one-to-one orthologs found in the relevant datasets
+# (could merge these rules)
+def genes_from_species(wildcards):
+    if wildcards.species == "mouse":
+        return expand(
+            "results/gene_lists/genes_{dataset}.csv", dataset=["tasic", "yao"]
+        )
+    elif wildcards.species == "human":
+        return expand(
+            "results/gene_lists/genes_{dataset}.csv", dataset=["bakken", "hodge"]
+        )
+
+
+rule intersect_genes:
     input:
         "results/gene_lists/orthologs.txt",
-        expand("results/gene_lists/genes_{dataset}.csv", dataset=["tasic", "yao", "bakken", "hodge"]),
+        genes_from_species,
     output:
-        shared_genes="results/gene_lists/shared_mammal_genes.txt",
+        shared_genes="results/gene_lists/shared_{species}_genes.txt",
     script:
         script_path("intersect_genes.py")
