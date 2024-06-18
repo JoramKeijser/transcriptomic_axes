@@ -1,7 +1,7 @@
 # Transcriptomic axes of GABAergic interneuron diversity
 
-Neural activity changes with an animal's internal state such as arousal. Much is known about how this happens in the mouse brain, but it is unclear if the same principles
-apply to the brains of other species, including humans. To bridge this gap, we compare gene expression patterns in neurons from different species. The following
+Neural activity is influenced not only by external stimuli but also by an animal's internal state. Much is known about how this happens in the mouse brain, but it is unclear if the same principles
+apply to other species, including humans. To bridge this gap, we compare gene expression patterns in neurons from different species. The following
 [preprint](https://doi.org/10.1101/2023.12.04.569849) describes our findings; this repository contains the corresponding code.
 
 >Keijser, J., Hertäg, L., & Sprekeler, H. (2023). Transcriptomic correlates of state modulation in GABAergic interneurons:
@@ -11,7 +11,7 @@ apply to the brains of other species, including humans. To bridge this gap, we c
   <img width="800" src="./figures/tpc_fig0.png">
 </p>
 
-The actual analysis code is combined into a pipeline using [Snakemake](https://snakemake.readthedocs.io/en/stable/), which provides a reproducible and scalable way of running large-scale, interdependent analyses across multiple datasets. Briefly, a Snakemake pipeline consists of multiple input/output rules, which together form a directed acyclic graph (DAG) through which data flows --- from raw input to the final result. The DAG of the first supplementary figure is shown below.
+The actual analysis code is combined into a pipeline using [Snakemake](https://snakemake.readthedocs.io/en/stable/), which provides a reproducible and scalable way of running large-scale, interdependent analyses across multiple datasets. Briefly, a Snakemake pipeline consists of multiple input/output rules, forming a directed acyclic graph (DAG) through which data flows --- from raw input to the final result. The DAG of the first supplementary figure is shown below.
 
 <p align="center">
   <img width="600" src="./figures/dags/fig1.png">
